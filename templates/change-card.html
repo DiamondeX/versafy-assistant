@@ -1,0 +1,144 @@
+<!--
+Versafy — шаблон карточки изменений. Эталон к регламенту, раздел 3 (версия 2.1).
+
+КАК ИСПОЛЬЗОВАТЬ
+1. Карточка выводится инструментом show_widget (Visualizer). Перед первым вызовом в чате — read_me с модулем interactive.
+2. В widget_code передаётся всё, что ниже этого комментария, без самого комментария.
+3. Менять можно ТОЛЬКО три константы в начале <script>:
+   TITLE — первая строка собранного текста, например «Решения по карточке (лист 2, строки 3–4):».
+   R — блоки значений. Поля каждого блока значения:
+       o — объект с номером, как в регламенте: «Rebin Said, SolarCentric #278»;
+       u — ссылка на объект (Planfix, Google Doc, календарь);
+       f — поле или действие: «Лид-форма», «Новый комментарий», «Новое задание: разбор встречи»;
+       w — было («—», если пусто);
+       n — станет (переносы строк — \n);
+       s — источник;
+       d — необязательно: true, если блок значения содержит черновик сообщения. Тогда у части «Станет» выводится
+       иконка «Копировать», а после «Изменить» и у части «Изменено на»;
+       opts, one — необязательно, как у блоков вопросов M: для полей со списком значений (статус, причина закрытия,
+       статус тенанта, исполнители) варианты показываются над полем редактирования при нажатии «Изменить».
+   M — блоки вопросов раздела «Не хватает»: q — текст вопроса обычным текстом (весь вопрос ссылкой не делается);
+       l — массив ссылок [{t,u}]: t — точный фрагмент текста q (например «Kamlesh Khatiwala #92»),
+       u — ссылка на этот объект. Каждый упомянутый объект — отдельная ссылка; каждое вхождение t в q
+       выводится ссылкой. Если фрагменты начинаются в одном месте, берётся более длинный.
+       Без упоминаний объектов l не указывается.
+       opts — необязательный массив коротких вариантов ответа, если вопрос подразумевает очевидные варианты
+       (например ['Да','Нет'] или список статусов). Без очевидных вариантов opts не указывается.
+       До 6 вариантов выводятся кнопками, больше 6 — выпадающим списком с поиском по фрагменту.
+       Нажатие варианта дописывает его в поле ответа через «; », повторное нажатие убирает его.
+       one — true, если ответ может быть только один (статус, причина закрытия): нажатие заменяет ответ.
+       Варианты для полей со списком значений в Planfix берутся из актуального списка Planfix.
+       Ответ в поле можно дописать или изменить вручную.
+       Пустой массив M — раздел покажет «Вопросов нет».
+4. Стили, разметку, кнопки, цвета отметок и функцию collect() не менять.
+5. Формат собранного текста (кнопки «Скопировать» и «Отправить»):
+   TITLE
+   N. объект · поле: принято | изменено → «значение» | обсудить: контекст | отложено | отменено
+   Не хватает:
+   — вопрос → ответ | отложено | отложено (черновик: текст) | отменено
+   «ответ» — у вопроса нажата «Принять». У вопроса с «Отложить» введённый текст передаётся как черновик.
+   Блок значения или блок вопроса без нажатой кнопки решения не имеет: пока такие есть, «Скопировать» и «Отправить»
+   не срабатывают и выводят сообщение с числом блоков без решения.
+6. У блоков вопросов кнопки «Принять», «Отложить», «Отменить». Отметка меняется только нажатием другой кнопки;
+   «Принять» без ответа не срабатывает.
+7. Текст, сохранённый по «Изменить» или «Обсудить», выводится под частями «Было» и «Станет» («Изменено на»,
+   «Контекст для обсуждения»); «Станет» хранит исходное предложение. После «Изменить» кнопка «Принять» принимает
+   исходное «Станет».
+-->
+<h2 class="sr-only">Карточка предлагаемых изменений</h2>
+<style>
+.cc-row{border:0.5px solid var(--border);border-radius:12px;padding:12px 14px;margin:0 0 10px;background:var(--surface-2)}
+.cc-row.s-acc{border-left:4px solid var(--border-success);border-radius:0 12px 12px 0}.cc-row.s-edit{border-left:4px solid var(--border-accent);border-radius:0 12px 12px 0}.cc-row.s-disc{border-left:4px solid var(--border-warning);border-radius:0 12px 12px 0}.cc-row.s-post{border-left:4px solid var(--border-strong);border-radius:0 12px 12px 0}.cc-row.s-canc{border-left:4px solid var(--border-danger);border-radius:0 12px 12px 0}.cc-row.s-macc{border-left:4px solid #1d9e8f;border-left-color:color-mix(in srgb,var(--border-accent),var(--border-success));border-radius:0 12px 12px 0}
+.cc-lbl{font-size:12px;color:var(--text-secondary);margin:6px 0 2px}
+.cc-val{font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.cc-val.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cc-vs{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+.cc-hd{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cc-cp{min-height:32px;min-width:32px;padding:0 8px;font-size:16px;flex:0 0 auto}
+.cc-usr{margin-top:8px;padding-top:4px;border-top:0.5px solid var(--border)}
+.cc-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.cc-btns button{min-height:40px;flex:1 1 30%;font-size:13px}
+.cc-tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:var(--radius);margin-left:6px}
+.cc-opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.cc-opts button{min-height:36px;font-size:13px}.cc-opts button[aria-pressed="true"],.cc-ddl button[aria-pressed="true"]{border-color:var(--border-accent);background:var(--bg-accent);color:var(--text-accent)}
+.cc-dd{margin-top:8px}.cc-dd input{width:100%;box-sizing:border-box;min-height:40px}
+.cc-ddl{max-height:220px;overflow-y:auto;border:0.5px solid var(--border);border-radius:var(--radius);margin-top:4px;background:var(--surface-1)}
+.cc-ddl button{display:block;width:100%;text-align:left;min-height:40px;font-size:13px;border:0;border-bottom:0.5px solid var(--border);border-radius:0;background:transparent}
+.cc-ddl .cc-none{padding:10px 12px;font-size:13px;color:var(--text-secondary)}
+@media (min-width:560px){.cc-vs{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.cc-btns button{flex:0 0 auto}}
+</style>
+<div id="rows" style="padding:0.5rem 0"></div>
+<div style="font-size:16px;font-weight:500;margin:1rem 0 8px">Не хватает</div>
+<div id="miss"></div>
+<div class="cc-btns" style="margin-top:14px"><button id="copyBtn"><i class="ti ti-copy" aria-hidden="true"></i> Скопировать</button><button id="sendBtn">Отправить ↗</button></div>
+<div id="note" style="font-size:13px;color:var(--text-secondary);margin-top:6px"></div>
+<script>
+const TITLE='Решения по карточке (описание набора изменений):';
+const R=[
+{o:'Название сделки #000',u:'https://versafy.planfix.ua/task/000',f:'Поле',w:'—',n:'Новое значение',s:'Источник'}
+];
+const M=[
+{q:'Название сделки #000: вопрос о Контакт #000?',l:[{t:'Название сделки #000',u:'https://versafy.planfix.ua/task/000'},{t:'Контакт #000',u:'https://versafy.planfix.ua/contact/000'}],opts:['Вариант 1','Вариант 2'],one:true}
+];
+const ST={acc:['принято','var(--bg-success)','var(--text-success)'],edit:['изменено','var(--bg-accent)','var(--text-accent)'],disc:['обсудить','var(--bg-warning)','var(--text-warning)'],post:['отложено','var(--surface-1)','var(--text-secondary)'],canc:['отменено','var(--bg-danger)','var(--text-danger)']};
+const state=R.map(()=>({a:null,e:'',c:''}));
+const ms=M.map(()=>({st:null}));
+const MT={acc:['принято','color-mix(in srgb,var(--bg-accent),var(--bg-success))','color-mix(in srgb,var(--text-accent),var(--text-success))'],post:['отложено','var(--surface-1)','var(--text-secondary)'],canc:['отменено','var(--bg-danger)','var(--text-danger)']};const keep={};M.forEach((_,i)=>keep[i]='');
+const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const cpBtn=k=>`<button class="cc-cp" data-cp="${k}" aria-label="Копировать"><i class="ti ti-copy" aria-hidden="true"></i></button>`;
+function rowHTML(r,i){const s=state[i];const t=s.a?`<span class="cc-tag" style="background:${ST[s.a][1]};color:${ST[s.a][2]}">${ST[s.a][0]}</span>`:'';
+const ex=s.a==='edit'?['Изменено на',s.e]:s.a==='disc'?['Контекст для обсуждения',s.c]:null;
+return `<div class="cc-row ${s.a?'s-'+s.a:''}"><div style="font-size:13px"><a href="${r.u}">${esc(r.o)}</a>${t}</div>
+<div style="font-size:15px;font-weight:500;margin-top:4px">${esc(r.f)}</div>
+<div class="cc-vs"><div><div class="cc-lbl">Было</div><div class="cc-val">${esc(r.w)}</div></div>
+<div><div class="cc-hd"><div class="cc-lbl">Станет</div>${r.d?cpBtn('n'+i):''}</div><div class="cc-val clamp" id="v${i}">${esc(r.n)}</div>${r.n.length>120?`<button style="min-height:32px;font-size:12px;margin-top:4px" data-more="${i}">Показать полностью</button>`:''}</div></div>
+${ex?`<div class="cc-usr"><div class="cc-hd"><div class="cc-lbl">${ex[0]}</div>${r.d&&s.a==='edit'?cpBtn('e'+i):''}</div><div class="cc-val">${esc(ex[1])}</div></div>`:''}
+<div class="cc-lbl">Источник: ${esc(r.s)}</div><div id="ed${i}"></div>
+<div class="cc-btns"><button data-a="acc" data-i="${i}">Принять</button><button data-a="edit" data-i="${i}">Изменить</button><button data-a="disc" data-i="${i}">Обсудить</button><button data-a="post" data-i="${i}">Отложить</button><button data-a="canc" data-i="${i}">Отменить</button></div></div>`}
+function render(){document.getElementById('rows').innerHTML=R.map(rowHTML).join('')}
+function renderMiss(){const el=document.getElementById('miss');if(!M.length){el.innerHTML='<div style="font-size:14px;color:var(--text-secondary)">Вопросов нет.</div>';return}
+el.innerHTML=M.map((m,i)=>{const st=ms[i].st;return `<div class="cc-row ${st==='acc'?'s-macc':st?'s-'+st:''}"><div style="font-size:14px;line-height:1.5">${qHTML(m)}${st?`<span class="cc-tag" style="background:${MT[st][1]};color:${MT[st][2]}">${MT[st][0]}</span>`:''}</div>
+${optsHTML('m'+i)}
+<textarea id="m${i}" data-kq="m${i}" rows="2" style="width:100%;margin-top:8px;box-sizing:border-box" placeholder="Ваш ответ"></textarea>
+<div id="me${i}" style="font-size:13px;color:var(--text-danger)"></div>
+<div class="cc-btns"><button data-mb="acc" data-mi="${i}" aria-pressed="${st==='acc'}">Принять</button><button data-mb="post" data-mi="${i}" aria-pressed="${st==='post'}">Отложить</button><button data-mb="canc" data-mi="${i}" aria-pressed="${st==='canc'}">Отменить</button></div></div>`}).join('');M.forEach((_,j)=>{document.getElementById('m'+j).value=keep[j];syncOpts('m'+j)})}
+function qHTML(m){const q=m.q,L=(m.l||[]).filter(x=>x.t&&q.includes(x.t));let o='',i=0;
+while(i<q.length){let b=null;L.forEach(x=>{const p=q.indexOf(x.t,i);if(p>=0&&(!b||p<b.p||(p===b.p&&x.t.length>b.x.t.length)))b={p,x}});
+if(!b){o+=esc(q.slice(i));break}o+=esc(q.slice(i,b.p))+`<a href="${b.x.u}">${esc(b.x.t)}</a>`;i=b.p+b.x.t.length}return o}
+const parts=v=>v.split(';').map(s=>s.trim()).filter(Boolean);
+const src=k=>k[0]==='m'?M[+k.slice(1)]:R[+k.slice(1)];
+function optsHTML(k){const o=src(k).opts||[];if(!o.length)return'';
+return o.length<=6?`<div class="cc-opts">${o.map((x,j)=>`<button data-k="${k}" data-ok="${j}" aria-pressed="false">${esc(x)}</button>`).join('')}</div>`:`<div class="cc-dd"><input type="search" id="s${k}" data-ks="${k}" placeholder="Найти вариант (${o.length})" autocomplete="off"><div class="cc-ddl" id="l${k}" hidden></div></div>`}
+function syncOpts(k){const ta=document.getElementById(k);if(!ta)return;const p=parts(ta.value);document.querySelectorAll(`[data-k="${k}"]`).forEach(b=>b.setAttribute('aria-pressed',String(p.includes(src(k).opts[+b.dataset.ok]))))}
+function fillList(k){const l=document.getElementById('l'+k),f=document.getElementById('s'+k).value.trim().toLowerCase();
+const hits=src(k).opts.map((o,j)=>[o,j]).filter(([o])=>o.toLowerCase().includes(f));
+l.innerHTML=hits.length?hits.map(([o,j])=>`<button data-k="${k}" data-ok="${j}" aria-pressed="false">${esc(o)}</button>`).join(''):'<div class="cc-none">Ничего не найдено</div>';l.hidden=false;syncOpts(k)}
+function pick(k,j){const ta=document.getElementById(k),q=src(k),o=q.opts[j];let p=parts(ta.value);
+if(q.one)p=p.includes(o)?[]:[o];else p=p.includes(o)?p.filter(x=>x!==o):p.concat(o);
+ta.value=p.join('; ');syncOpts(k);const s=document.getElementById('s'+k);if(s){s.value='';document.getElementById('l'+k).hidden=true}}
+function say(t,bad){const n=document.getElementById('note');n.textContent=t;n.style.color=bad?'var(--text-danger)':'var(--text-secondary)'}
+function copyText(t,cb){const fb=()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();let ok=true;try{document.execCommand('copy')}catch(x){ok=false}ta.remove();cb(ok)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>cb(true),fb)}else fb()}
+function pending(){const r=state.filter(s=>!s.a).length,m=ms.filter(x=>!x.st).length;
+return r||m?`Пока не по всем значениям и вопросам принято решение. Без решения: блоков значений — ${r}, вопросов — ${m}.`:''}
+render();renderMiss();
+document.getElementById('rows').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.k)return;
+if(b.dataset.cp){const k=b.dataset.cp,j=+k.slice(1),ic=b.firstElementChild;copyText(k[0]==='n'?R[j].n:state[j].e,ok=>{ic.className=ok?'ti ti-check':'ti ti-x';setTimeout(()=>{ic.className='ti ti-copy'},1500)});return}
+if(b.dataset.more){const v=document.getElementById('v'+b.dataset.more);v.classList.toggle('clamp');b.textContent=v.classList.contains('clamp')?'Показать полностью':'Свернуть';return}
+const i=+b.dataset.i,a=b.dataset.a;const box=document.getElementById('ed'+i);
+if(a==='edit'||a==='disc'){box.innerHTML=`${a==='edit'?optsHTML('t'+i):''}<textarea id="t${i}" data-kq="t${i}" rows="4" style="width:100%;margin-top:8px;box-sizing:border-box" placeholder="${a==='edit'?'Новое значение':'Контекст для переформулировки'}">${esc(a==='edit'?(state[i].e||R[i].n):state[i].c)}</textarea><div class="cc-btns"><button data-save="${a}" data-i="${i}">Сохранить</button></div><div id="err${i}" style="font-size:13px;color:var(--text-danger)"></div>`;syncOpts('t'+i);return}
+if(b.dataset.save){const t=document.getElementById('t'+i).value.trim();if(!t){document.getElementById('err'+i).textContent='Введите текст';return}
+if(b.dataset.save==='edit'){state[i].e=t;state[i].a='edit'}else{state[i].c=t;state[i].a='disc'}say('');render();return}
+state[i].a=a;say('');render()});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.kq)syncOpts(t.dataset.kq);if(t.dataset.ks)fillList(t.dataset.ks)});
+document.addEventListener('focusin',e=>{const t=e.target;if(t.dataset.ks)fillList(t.dataset.ks)});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b){pick(b.dataset.k,+b.dataset.ok);return}
+if(!e.target.closest('.cc-dd'))document.querySelectorAll('.cc-ddl').forEach(l=>l.hidden=true)});
+document.getElementById('miss').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.k)return;
+const a=b.dataset.mb;if(!a)return;const i=+b.dataset.mi;
+if(a==='acc'&&!document.getElementById('m'+i).value.trim()){document.getElementById('me'+i).textContent='Введите или выберите ответ';return}
+M.forEach((_,j)=>keep[j]=document.getElementById('m'+j).value);ms[i].st=a;say('');renderMiss()});
+function collect(){const L=[TITLE];
+R.forEach((r,i)=>{const s=state[i];let d;if(s.a==='acc')d='принято';else if(s.a==='edit')d='изменено → «'+s.e+'»';else if(s.a==='disc')d='обсудить: '+s.c;else if(s.a==='canc')d='отменено';else d='отложено';L.push((i+1)+'. '+r.o+' · '+r.f+': '+d)});
+if(M.length){L.push('Не хватает:');M.forEach((m,i)=>{const v=document.getElementById('m'+i).value.trim();L.push('— '+m.q+' → '+(ms[i].st==='canc'?'отменено':ms[i].st==='acc'?v:(v?'отложено (черновик: '+v+')':'отложено')))})}return L.join('\n')}
+document.getElementById('copyBtn').onclick=()=>{const p=pending();if(p){say(p,true);return}copyText(collect(),ok=>say(ok?'Скопировано':'Не удалось скопировать',!ok))};
+document.getElementById('sendBtn').onclick=()=>{const p=pending();if(p){say(p,true);return}sendPrompt(collect())};
+</script>
