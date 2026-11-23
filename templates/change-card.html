@@ -55,7 +55,8 @@ Versafy — шаблон карточки изменений. Эталон к «
    решение по блоку и его цветовую отметку; пока не нажата «Сохранить», поле ввода подсвечено цветом режима
    (синим у «Изменить», жёлто-коричневым у «Обсудить»). Под полем справа кнопки-иконки с подсказками: «Отменить ввод»
    (крестик) закрывает поле, блок остаётся без решения, черновик сохраняется; «Сохранить» (галочка). Пока поле
-   открыто, кнопки решений этого блока неактивны.
+   открыто, кнопки решений этого блока неактивны (атрибут disabled). В поле Enter равносилен «Сохранить»,
+   Escape — «Отменить ввод»; перенос строки — Shift+Enter.
 8. У каждого блока стрелки вверх и вниз переводят к предыдущему или следующему блоку без решения; подсказка
    выводится над стрелкой. Если решения приняты по всем блокам, стрелки прокручивают к кнопкам «Скопировать»
    и «Отправить», под которыми выводится «Решения по всем блокам приняты».
@@ -156,6 +157,8 @@ if(b.dataset.save){const t=document.getElementById('t'+i).value.trim();if(!t){do
 if(b.dataset.save==='edit'){state[i].e=t;state[i].a='edit'}else{state[i].c=t;state[i].a='disc'}state[i].o=null;say('');renderRow(i);return}
 state[i].a=a;say('');renderRow(i)});
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset.dr)state[+t.id.slice(1)].dr[t.dataset.dr]=t.value;if(t.dataset.kq)syncOpts(t.dataset.kq);if(t.dataset.ks)fillList(t.dataset.ks)});
+document.addEventListener('keydown',e=>{const t=e.target;if(!t.dataset||!t.dataset.dr||e.isComposing)return;const i=t.id.slice(1);
+if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.querySelector(`[data-save][data-i="${i}"]`).click()}else if(e.key==='Escape'){e.preventDefault();document.querySelector(`[data-cancel="${i}"]`).click()}});
 document.addEventListener('focusin',e=>{const t=e.target;if(t.dataset.ks)fillList(t.dataset.ks)});
 const blocks=()=>[...document.querySelectorAll('[data-blk]')];
 const undec=el=>{const k=el.dataset.blk,j=+k.slice(1);return k[0]==='r'?!state[j].a:!ms[j].st};
