@@ -83,7 +83,7 @@ Versafy — шаблон карточки изменений. Эталон к «
 .cc-nav button::after,.cc-ib::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);right:0;white-space:nowrap;font-size:12px;padding:4px 8px;border-radius:var(--radius);background:var(--surface-popover,var(--surface-2));color:var(--text-primary);border:0.5px solid var(--border-strong);opacity:0;pointer-events:none;transition:opacity .15s;z-index:2}
 .cc-nav button:hover::after,.cc-nav button:focus-visible::after,.cc-nav button.tip-on::after,.cc-ib:hover::after,.cc-ib:focus-visible::after{opacity:1}
 .cc-eb{display:flex;justify-content:flex-end;gap:6px;margin-top:8px}.cc-ib{position:relative;min-height:36px;min-width:36px;padding:0 8px;font-size:18px}
-.cc-btns button:disabled{opacity:.4;cursor:not-allowed}
+.cc-btns button:disabled{opacity:.4;pointer-events:none;transform:none}
 .cc-ta-edit{background:var(--bg-accent);border:1px solid var(--text-accent)!important}.cc-ta-disc{background:var(--bg-warning);border:1px solid var(--text-warning)!important}
 .cc-flash{outline:2px solid var(--text-accent);outline-offset:2px}
 .cc-cpw{display:flex;flex-direction:column;flex:1 1 30%}.cc-cpw button{flex:0 0 auto;width:100%}#cpMsg{font-size:12px;margin-top:4px}
