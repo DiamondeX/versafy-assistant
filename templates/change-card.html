@@ -47,7 +47,9 @@ Versafy — шаблон карточки изменений. Эталон к «
    «Принять» без ответа не срабатывает.
 7. Текст, сохранённый по «Изменить» или «Обсудить», выводится под частями «Было» и «Станет» («Изменено на»,
    «Контекст для обсуждения»); «Станет» хранит исходное предложение. После «Изменить» кнопка «Принять» принимает
-   исходное «Станет».
+   исходное «Станет». Текст, введённый в поле «Изменить» или «Обсудить», сохраняется и при выборе другого действия
+   и восстанавливается при повторном выборе того же действия. В собранный текст он попадает, только если сохранён
+   кнопкой «Сохранить» и итоговое решение по блоку — то же действие.
 -->
 <h2 class="sr-only">Карточка предлагаемых изменений</h2>
 <style>
@@ -83,7 +85,7 @@ const M=[
 {q:'Название сделки #000: вопрос о Контакт #000?',l:[{t:'Название сделки #000',u:'https://versafy.planfix.ua/task/000'},{t:'Контакт #000',u:'https://versafy.planfix.ua/contact/000'}],opts:['Вариант 1','Вариант 2'],one:true}
 ];
 const ST={acc:['принято','var(--bg-success)','var(--text-success)'],edit:['изменено','var(--bg-accent)','var(--text-accent)'],disc:['обсудить','var(--bg-warning)','var(--text-warning)'],post:['отложено','var(--surface-1)','var(--text-secondary)'],canc:['отменено','var(--bg-danger)','var(--text-danger)']};
-const state=R.map(()=>({a:null,e:'',c:''}));
+const state=R.map(()=>({a:null,e:'',c:'',dr:{}}));
 const ms=M.map(()=>({st:null}));
 const MT={acc:['принято','color-mix(in srgb,var(--bg-accent),var(--bg-success))','color-mix(in srgb,var(--text-accent),var(--text-success))'],post:['отложено','var(--surface-1)','var(--text-secondary)'],canc:['отменено','var(--bg-danger)','var(--text-danger)']};const keep={};M.forEach((_,i)=>keep[i]='');
 const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
@@ -117,7 +119,7 @@ const hits=src(k).opts.map((o,j)=>[o,j]).filter(([o])=>o.toLowerCase().includes(
 l.innerHTML=hits.length?hits.map(([o,j])=>`<button data-k="${k}" data-ok="${j}" aria-pressed="false">${esc(o)}</button>`).join(''):'<div class="cc-none">Ничего не найдено</div>';l.hidden=false;syncOpts(k)}
 function pick(k,j){const ta=document.getElementById(k),q=src(k),o=q.opts[j];let p=parts(ta.value);
 if(q.one)p=p.includes(o)?[]:[o];else p=p.includes(o)?p.filter(x=>x!==o):p.concat(o);
-ta.value=p.join('; ');syncOpts(k);const s=document.getElementById('s'+k);if(s){s.value='';document.getElementById('l'+k).hidden=true}}
+ta.value=p.join('; ');ta.dispatchEvent(new Event('input',{bubbles:true}));const s=document.getElementById('s'+k);if(s){s.value='';document.getElementById('l'+k).hidden=true}}
 function say(t,bad){const n=document.getElementById('note');n.textContent=t;n.style.color=bad?'var(--text-danger)':'var(--text-secondary)'}
 function copyText(t,cb){const fb=()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();let ok=true;try{document.execCommand('copy')}catch(x){ok=false}ta.remove();cb(ok)};
 if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>cb(true),fb)}else fb()}
@@ -128,11 +130,11 @@ document.getElementById('rows').addEventListener('click',e=>{const b=e.target.cl
 if(b.dataset.cp){const k=b.dataset.cp,j=+k.slice(1),ic=b.firstElementChild;copyText(k[0]==='n'?R[j].n:state[j].e,ok=>{ic.className=ok?'ti ti-check':'ti ti-x';setTimeout(()=>{ic.className='ti ti-copy'},1500)});return}
 if(b.dataset.more){const v=document.getElementById('v'+b.dataset.more);v.classList.toggle('clamp');b.textContent=v.classList.contains('clamp')?'Показать полностью':'Свернуть';return}
 const i=+b.dataset.i,a=b.dataset.a;const box=document.getElementById('ed'+i);
-if(a==='edit'||a==='disc'){box.innerHTML=`${a==='edit'?optsHTML('t'+i):''}<textarea id="t${i}" data-kq="t${i}" rows="4" style="width:100%;margin-top:8px;box-sizing:border-box" placeholder="${a==='edit'?'Новое значение':'Контекст для переформулировки'}">${esc(a==='edit'?(state[i].e||R[i].n):state[i].c)}</textarea><div class="cc-btns"><button data-save="${a}" data-i="${i}">Сохранить</button></div><div id="err${i}" style="font-size:13px;color:var(--text-danger)"></div>`;syncOpts('t'+i);return}
+if(a==='edit'||a==='disc'){box.innerHTML=`${a==='edit'?optsHTML('t'+i):''}<textarea id="t${i}" data-kq="t${i}" data-dr="${a}" rows="4" style="width:100%;margin-top:8px;box-sizing:border-box" placeholder="${a==='edit'?'Новое значение':'Контекст для переформулировки'}">${esc(state[i].dr[a]??(a==='edit'?(state[i].e||R[i].n):state[i].c))}</textarea><div class="cc-btns"><button data-save="${a}" data-i="${i}">Сохранить</button></div><div id="err${i}" style="font-size:13px;color:var(--text-danger)"></div>`;syncOpts('t'+i);return}
 if(b.dataset.save){const t=document.getElementById('t'+i).value.trim();if(!t){document.getElementById('err'+i).textContent='Введите текст';return}
 if(b.dataset.save==='edit'){state[i].e=t;state[i].a='edit'}else{state[i].c=t;state[i].a='disc'}say('');render();return}
 state[i].a=a;say('');render()});
-document.addEventListener('input',e=>{const t=e.target;if(t.dataset.kq)syncOpts(t.dataset.kq);if(t.dataset.ks)fillList(t.dataset.ks)});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.dr)state[+t.id.slice(1)].dr[t.dataset.dr]=t.value;if(t.dataset.kq)syncOpts(t.dataset.kq);if(t.dataset.ks)fillList(t.dataset.ks)});
 document.addEventListener('focusin',e=>{const t=e.target;if(t.dataset.ks)fillList(t.dataset.ks)});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b){pick(b.dataset.k,+b.dataset.ok);return}
 if(!e.target.closest('.cc-dd'))document.querySelectorAll('.cc-ddl').forEach(l=>l.hidden=true)});
