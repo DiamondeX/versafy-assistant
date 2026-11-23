@@ -37,19 +37,25 @@ Versafy — шаблон карточки изменений. Эталон к «
 4. Стили, разметку, кнопки, цвета отметок и функцию collect() не менять.
 5. Формат собранного текста (кнопки «Скопировать» и «Отправить»):
    TITLE
-   N. объект · поле: принято | изменено → «значение» | обсудить: контекст | отложено | отменено
+   N. объект · поле: принято | изменено → «значение» | обсудить: контекст | отложено | отменено | без решения
    Не хватает:
-   — вопрос → ответ | отложено | отложено (черновик: текст) | отменено
+   — вопрос → ответ | отложено | отложено (черновик: текст) | отменено | без решения | без решения (черновик: текст)
    «ответ» — у вопроса нажата «Принять». У вопроса с «Отложить» введённый текст передаётся как черновик.
-   Блок значения или блок вопроса без нажатой кнопки решения не имеет: пока такие есть, «Скопировать» и «Отправить»
-   не срабатывают и выводят сообщение с числом блоков без решения.
+   Блок значения или блок вопроса без нажатой кнопки решения не имеет. Пока такие есть, «Отправить» не срабатывает,
+   а «Скопировать» копирует текст с пометками «без решения»; обе кнопки выводят сообщение с числом блоков без решения
+   и кнопкой «Показать», которая прокручивает карточку к первому такому блоку. После копирования под кнопкой
+   «Скопировать» на 2 секунды появляется «Данные скопированы».
 6. У блоков вопросов кнопки «Принять», «Отложить», «Отменить». Отметка меняется только нажатием другой кнопки;
    «Принять» без ответа не срабатывает.
 7. Текст, сохранённый по «Изменить» или «Обсудить», выводится под частями «Было» и «Станет» («Изменено на»,
    «Контекст для обсуждения»); «Станет» хранит исходное предложение. После «Изменить» кнопка «Принять» принимает
    исходное «Станет». Текст, введённый в поле «Изменить» или «Обсудить», сохраняется и при выборе другого действия
    и восстанавливается при повторном выборе того же действия. В собранный текст он попадает, только если сохранён
-   кнопкой «Сохранить» и итоговое решение по блоку — то же действие.
+   кнопкой «Сохранить» и итоговое решение по блоку — то же действие. Нажатие «Изменить» или «Обсудить» сбрасывает
+   решение по блоку и его цветовую отметку; пока не нажата «Сохранить», поле ввода подсвечено цветом режима
+   (синим у «Изменить», жёлто-коричневым у «Обсудить»).
+8. У каждого блока стрелки вверх и вниз переводят к предыдущему или следующему блоку без решения; подсказка
+   выводится над стрелкой.
 -->
 <h2 class="sr-only">Карточка предлагаемых изменений</h2>
 <style>
@@ -69,12 +75,18 @@ Versafy — шаблон карточки изменений. Эталон к «
 .cc-ddl{max-height:220px;overflow-y:auto;border:0.5px solid var(--border);border-radius:var(--radius);margin-top:4px;background:var(--surface-1)}
 .cc-ddl button{display:block;width:100%;text-align:left;min-height:40px;font-size:13px;border:0;border-bottom:0.5px solid var(--border);border-radius:0;background:transparent}
 .cc-ddl .cc-none{padding:10px 12px;font-size:13px;color:var(--text-secondary)}
-@media (min-width:560px){.cc-vs{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.cc-btns button{flex:0 0 auto}}
+.cc-nav{display:flex;gap:4px;flex:0 0 auto}.cc-nav button{position:relative;min-height:28px;min-width:28px;padding:0 6px;font-size:14px}
+.cc-nav button::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);right:0;white-space:nowrap;font-size:12px;padding:4px 8px;border-radius:var(--radius);background:var(--surface-popover,var(--surface-2));color:var(--text-primary);border:0.5px solid var(--border-strong);opacity:0;pointer-events:none;transition:opacity .15s;z-index:2}
+.cc-nav button:hover::after,.cc-nav button:focus-visible::after,.cc-nav button.tip-on::after{opacity:1}
+.cc-ta-edit{background:var(--bg-accent);border:1px solid var(--text-accent)!important}.cc-ta-disc{background:var(--bg-warning);border:1px solid var(--text-warning)!important}
+.cc-flash{outline:2px solid var(--text-accent);outline-offset:2px}
+.cc-cpw{display:flex;flex-direction:column;flex:1 1 30%}.cc-cpw button{flex:0 0 auto;width:100%}#cpMsg{font-size:12px;margin-top:4px}
+@media (min-width:560px){.cc-vs{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.cc-btns button,.cc-cpw{flex:0 0 auto}}
 </style>
-<div id="rows" style="padding:0.5rem 0"></div>
+<div id="rows" style="padding:2rem 0 0.5rem"></div>
 <div style="font-size:16px;font-weight:500;margin:1rem 0 8px">Не хватает</div>
 <div id="miss"></div>
-<div class="cc-btns" style="margin-top:14px"><button id="copyBtn"><i class="ti ti-copy" aria-hidden="true"></i> Скопировать</button><button id="sendBtn">Отправить ↗</button></div>
+<div class="cc-btns" style="margin-top:14px"><div class="cc-cpw"><button id="copyBtn"><i class="ti ti-copy" aria-hidden="true"></i> Скопировать</button><div id="cpMsg" role="status"></div></div><button id="sendBtn">Отправить ↗</button></div>
 <div id="note" style="font-size:13px;color:var(--text-secondary);margin-top:6px"></div>
 <script>
 const TITLE='Решения по карточке (описание набора изменений):';
@@ -89,10 +101,11 @@ const state=R.map(()=>({a:null,e:'',c:'',dr:{}}));
 const ms=M.map(()=>({st:null}));
 const MT={acc:['принято','color-mix(in srgb,var(--bg-accent),var(--bg-success))','color-mix(in srgb,var(--text-accent),var(--text-success))'],post:['отложено','var(--surface-1)','var(--text-secondary)'],canc:['отменено','var(--bg-danger)','var(--text-danger)']};const keep={};M.forEach((_,i)=>keep[i]='');
 const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const navHTML=k=>`<div class="cc-nav">${[[-1,'up','предыдущему'],[1,'down','следующему']].map(([d,ic,w])=>`<button data-nav="${d}" data-from="${k}" data-tip="К ${w} блоку без решения" aria-label="К ${w} блоку без решения"><i class="ti ti-chevron-${ic}" aria-hidden="true"></i></button>`).join('')}</div>`;
 const cpBtn=k=>`<button class="cc-cp" data-cp="${k}" aria-label="Копировать"><i class="ti ti-copy" aria-hidden="true"></i></button>`;
 function rowHTML(r,i){const s=state[i];const t=s.a?`<span class="cc-tag" style="background:${ST[s.a][1]};color:${ST[s.a][2]}">${ST[s.a][0]}</span>`:'';
 const ex=s.a==='edit'?['Изменено на',s.e]:s.a==='disc'?['Контекст для обсуждения',s.c]:null;
-return `<div class="cc-row ${s.a?'s-'+s.a:''}"><div style="font-size:13px"><a href="${r.u}">${esc(r.o)}</a>${t}</div>
+return `<div class="cc-row ${s.a?'s-'+s.a:''}" data-blk="r${i}"><div class="cc-hd"><div style="font-size:13px"><a href="${r.u}">${esc(r.o)}</a>${t}</div>${navHTML('r'+i)}</div>
 <div style="font-size:15px;font-weight:500;margin-top:4px">${esc(r.f)}</div>
 <div class="cc-vs"><div><div class="cc-lbl">Было</div><div class="cc-val">${esc(r.w)}</div></div>
 <div><div class="cc-hd"><div class="cc-lbl">Станет</div>${r.d?cpBtn('n'+i):''}</div><div class="cc-val clamp" id="v${i}">${esc(r.n)}</div>${r.n.length>120?`<button style="min-height:32px;font-size:12px;margin-top:4px" data-more="${i}">Показать полностью</button>`:''}</div></div>
@@ -100,8 +113,9 @@ ${ex?`<div class="cc-usr"><div class="cc-hd"><div class="cc-lbl">${ex[0]}</div>$
 <div class="cc-lbl">Источник: ${esc(r.s)}</div><div id="ed${i}"></div>
 <div class="cc-btns"><button data-a="acc" data-i="${i}">Принять</button><button data-a="edit" data-i="${i}">Изменить</button><button data-a="disc" data-i="${i}">Обсудить</button><button data-a="post" data-i="${i}">Отложить</button><button data-a="canc" data-i="${i}">Отменить</button></div></div>`}
 function render(){document.getElementById('rows').innerHTML=R.map(rowHTML).join('')}
+function renderRow(i){document.querySelector(`[data-blk="r${i}"]`).outerHTML=rowHTML(R[i],i)}
 function renderMiss(){const el=document.getElementById('miss');if(!M.length){el.innerHTML='<div style="font-size:14px;color:var(--text-secondary)">Вопросов нет.</div>';return}
-el.innerHTML=M.map((m,i)=>{const st=ms[i].st;return `<div class="cc-row ${st==='acc'?'s-macc':st?'s-'+st:''}"><div style="font-size:14px;line-height:1.5">${qHTML(m)}${st?`<span class="cc-tag" style="background:${MT[st][1]};color:${MT[st][2]}">${MT[st][0]}</span>`:''}</div>
+el.innerHTML=M.map((m,i)=>{const st=ms[i].st;return `<div class="cc-row ${st==='acc'?'s-macc':st?'s-'+st:''}" data-blk="m${i}"><div class="cc-hd" style="align-items:flex-start"><div style="font-size:14px;line-height:1.5">${qHTML(m)}${st?`<span class="cc-tag" style="background:${MT[st][1]};color:${MT[st][2]}">${MT[st][0]}</span>`:''}</div>${navHTML('m'+i)}</div>
 ${optsHTML('m'+i)}
 <textarea id="m${i}" data-kq="m${i}" rows="2" style="width:100%;margin-top:8px;box-sizing:border-box" placeholder="Ваш ответ"></textarea>
 <div id="me${i}" style="font-size:13px;color:var(--text-danger)"></div>
@@ -126,25 +140,35 @@ if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>cb(true),fb)}e
 function pending(){const r=state.filter(s=>!s.a).length,m=ms.filter(x=>!x.st).length;
 return r||m?`Пока не по всем значениям и вопросам принято решение. Без решения: блоков значений — ${r}, вопросов — ${m}.`:''}
 render();renderMiss();
-document.getElementById('rows').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.k)return;
+document.getElementById('rows').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.k||b.dataset.nav)return;
 if(b.dataset.cp){const k=b.dataset.cp,j=+k.slice(1),ic=b.firstElementChild;copyText(k[0]==='n'?R[j].n:state[j].e,ok=>{ic.className=ok?'ti ti-check':'ti ti-x';setTimeout(()=>{ic.className='ti ti-copy'},1500)});return}
 if(b.dataset.more){const v=document.getElementById('v'+b.dataset.more);v.classList.toggle('clamp');b.textContent=v.classList.contains('clamp')?'Показать полностью':'Свернуть';return}
-const i=+b.dataset.i,a=b.dataset.a;const box=document.getElementById('ed'+i);
-if(a==='edit'||a==='disc'){box.innerHTML=`${a==='edit'?optsHTML('t'+i):''}<textarea id="t${i}" data-kq="t${i}" data-dr="${a}" rows="4" style="width:100%;margin-top:8px;box-sizing:border-box" placeholder="${a==='edit'?'Новое значение':'Контекст для переформулировки'}">${esc(state[i].dr[a]??(a==='edit'?(state[i].e||R[i].n):state[i].c))}</textarea><div class="cc-btns"><button data-save="${a}" data-i="${i}">Сохранить</button></div><div id="err${i}" style="font-size:13px;color:var(--text-danger)"></div>`;syncOpts('t'+i);return}
+const i=+b.dataset.i,a=b.dataset.a;
+if(a==='edit'||a==='disc'){state[i].a=null;say('');renderRow(i);document.getElementById('ed'+i).innerHTML=`${a==='edit'?optsHTML('t'+i):''}<textarea id="t${i}" data-kq="t${i}" data-dr="${a}" class="cc-ta-${a}" rows="4" style="width:100%;margin-top:8px;box-sizing:border-box" placeholder="${a==='edit'?'Новое значение':'Контекст для переформулировки'}">${esc(state[i].dr[a]??(a==='edit'?(state[i].e||R[i].n):state[i].c))}</textarea><div class="cc-btns"><button data-save="${a}" data-i="${i}">Сохранить</button></div><div id="err${i}" style="font-size:13px;color:var(--text-danger)"></div>`;syncOpts('t'+i);return}
 if(b.dataset.save){const t=document.getElementById('t'+i).value.trim();if(!t){document.getElementById('err'+i).textContent='Введите текст';return}
-if(b.dataset.save==='edit'){state[i].e=t;state[i].a='edit'}else{state[i].c=t;state[i].a='disc'}say('');render();return}
-state[i].a=a;say('');render()});
+if(b.dataset.save==='edit'){state[i].e=t;state[i].a='edit'}else{state[i].c=t;state[i].a='disc'}say('');renderRow(i);return}
+state[i].a=a;say('');renderRow(i)});
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset.dr)state[+t.id.slice(1)].dr[t.dataset.dr]=t.value;if(t.dataset.kq)syncOpts(t.dataset.kq);if(t.dataset.ks)fillList(t.dataset.ks)});
 document.addEventListener('focusin',e=>{const t=e.target;if(t.dataset.ks)fillList(t.dataset.ks)});
-document.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b){pick(b.dataset.k,+b.dataset.ok);return}
+const blocks=()=>[...document.querySelectorAll('[data-blk]')];
+const undec=el=>{const k=el.dataset.blk,j=+k.slice(1);return k[0]==='r'?!state[j].a:!ms[j].st};
+function jump(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('cc-flash');setTimeout(()=>el.classList.remove('cc-flash'),1500)}
+function go(b){const L=blocks(),d=+b.dataset.nav;let x=L.findIndex(el=>el.dataset.blk===b.dataset.from)+d;
+for(;x>=0&&x<L.length;x+=d)if(undec(L[x])){jump(L[x]);return}
+const tip=b.dataset.tip;b.dataset.tip=d<0?'Выше блоков без решения нет':'Ниже блоков без решения нет';b.classList.add('tip-on');setTimeout(()=>{b.dataset.tip=tip;b.classList.remove('tip-on')},1500)}
+document.addEventListener('click',e=>{const nv=e.target.closest('[data-nav]');if(nv){go(nv);return}
+if(e.target.closest('#showBtn')){const t=blocks().find(undec);if(t)jump(t);return}
+const b=e.target.closest('[data-k]');if(b){pick(b.dataset.k,+b.dataset.ok);return}
 if(!e.target.closest('.cc-dd'))document.querySelectorAll('.cc-ddl').forEach(l=>l.hidden=true)});
 document.getElementById('miss').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.k)return;
 const a=b.dataset.mb;if(!a)return;const i=+b.dataset.mi;
 if(a==='acc'&&!document.getElementById('m'+i).value.trim()){document.getElementById('me'+i).textContent='Введите или выберите ответ';return}
 M.forEach((_,j)=>keep[j]=document.getElementById('m'+j).value);ms[i].st=a;say('');renderMiss()});
 function collect(){const L=[TITLE];
-R.forEach((r,i)=>{const s=state[i];let d;if(s.a==='acc')d='принято';else if(s.a==='edit')d='изменено → «'+s.e+'»';else if(s.a==='disc')d='обсудить: '+s.c;else if(s.a==='canc')d='отменено';else d='отложено';L.push((i+1)+'. '+r.o+' · '+r.f+': '+d)});
-if(M.length){L.push('Не хватает:');M.forEach((m,i)=>{const v=document.getElementById('m'+i).value.trim();L.push('— '+m.q+' → '+(ms[i].st==='canc'?'отменено':ms[i].st==='acc'?v:(v?'отложено (черновик: '+v+')':'отложено')))})}return L.join('\n')}
-document.getElementById('copyBtn').onclick=()=>{const p=pending();if(p){say(p,true);return}copyText(collect(),ok=>say(ok?'Скопировано':'Не удалось скопировать',!ok))};
-document.getElementById('sendBtn').onclick=()=>{const p=pending();if(p){say(p,true);return}sendPrompt(collect())};
+R.forEach((r,i)=>{const s=state[i];let d;if(s.a==='acc')d='принято';else if(s.a==='edit')d='изменено → «'+s.e+'»';else if(s.a==='disc')d='обсудить: '+s.c;else if(s.a==='canc')d='отменено';else if(s.a==='post')d='отложено';else d='без решения';L.push((i+1)+'. '+r.o+' · '+r.f+': '+d)});
+if(M.length){L.push('Не хватает:');M.forEach((m,i)=>{const v=document.getElementById('m'+i).value.trim();L.push('— '+m.q+' → '+(ms[i].st==='canc'?'отменено':ms[i].st==='acc'?v:(ms[i].st==='post'?'отложено':'без решения')+(v?' (черновик: '+v+')':'')))})}return L.join('\n')}
+function sayPending(p){const n=document.getElementById('note');n.style.color='var(--text-danger)';n.innerHTML=`<span>${p}</span> <button id="showBtn" style="min-height:32px;font-size:12px;margin-left:6px">Показать</button>`}
+function flashCp(ok){const m=document.getElementById('cpMsg');m.textContent=ok?'Данные скопированы':'Не удалось скопировать';m.style.color=ok?'var(--text-success)':'var(--text-danger)';clearTimeout(flashCp.t);flashCp.t=setTimeout(()=>{m.textContent=''},2000)}
+document.getElementById('copyBtn').onclick=()=>{const p=pending();copyText(collect(),flashCp);if(p)sayPending(p);else say('')};
+document.getElementById('sendBtn').onclick=()=>{const p=pending();if(p){sayPending(p);return}sendPrompt(collect())};
 </script>
