@@ -55,8 +55,9 @@ Versafy — шаблон карточки изменений. Эталон к «
    «Показать», которая переводит к первому такому блоку. После копирования под кнопкой «Скопировать» на 2 секунды
    появляется «Данные скопированы».
 6. Активный блок. Активным может быть не больше одного блока: тот, по которому кликнули, в который перешли
-   клавишей Tab или в котором находится фокус ввода. При открытии карточки активного блока нет; блок остаётся
-   активным, пока не станет активным другой. Только активный блок имеет собственную рамку и показывает название
+   клавишей Tab или в котором находится фокус ввода. При открытии карточки активного блока нет. Блок перестаёт
+   быть активным, когда активным становится другой блок, при клике или тапе вне блоков и по кнопке
+   «Минимизировать». Только активный блок имеет собственную рамку и показывает название
    объекта, надписи «Было» и «Станет», источник, варианты ответов, кнопки решений с текстом и стрелки перехода.
    У активного блока значения отметка решения стоит после названия поля. Пустое «было» не выводится, и «станет»
    занимает всю ширину. При наведении на «Было», «Станет» или «Изменено на» в строке надписи появляется кнопка
@@ -67,17 +68,19 @@ Versafy — шаблон карточки изменений. Эталон к «
    «старое ➜ новое»; иначе, а также если в значении есть перенос строки, — название поля, под ним старое и новое
    по половине ширины со стрелкой между ними (на узком экране одно под другим). Стрелка «➜» стоит и перед новым
    значением без старого. Длинное значение обрезается до трёх строк со ссылкой «Показать полностью» в самом тексте;
-   нажатие делает блок активным и раскрывает значение, в активном блоке «Свернуть» сворачивает его обратно.
+   нажатие раскрывает значение, «Свернуть» сворачивает его обратно. Эти нажатия не делают блок активным
+   и не снимают активность; раскрытое значение остаётся раскрытым и в активном, и в неактивном виде блока.
    Решения «принято», «изменено» и «отменено» показываются оформлением нового значения в цвете решения
    (отменённое зачёркнуто), при «изменено» на месте нового значения стоит изменённое. «Обсудить» и «отложено»
    показываются отметкой; у «обсудить» под строкой серым выводится контекст.
-8. Всплывающий ряд. При наведении на неактивный блок над ним справа появляются кнопки-значки с подсказками:
+8. Всплывающий ряд. При наведении на неактивный блок над ним справа появляются компактные кнопки-значки
+   без рамок, с подсказками:
    у блока значения — «Принять», «Изменить», «Обсудить», «Отложить», «Отменить», затем «Скопировать старое
    значение» (если оно есть) ➜ «Скопировать новое значение»; у блока вопроса — «Принять», «Отложить», «Отменить».
    «Принять», «Отложить», «Отменить» и копирование срабатывают без активации блока; «Изменить» и «Обсудить»
    делают блок активным и открывают поле ввода. «Скопировать новое значение» копирует то, что показано:
    при решении «изменено» — изменённое значение.
-9. Группы. У группы блоков значений в заголовке справа кнопка «Принять все» (зелёная галочка): она ставит
+9. Группы. У группы блоков значений в заголовке справа кнопка «Принять все» (зелёная галочка без рамки): она ставит
    «принято» всем блокам группы, у которых ещё нет решения; уже принятые решения не меняются.
    Название объекта в заголовке без ссылки выводится цветом ссылки без подчёркивания.
 10. У блоков вопросов кнопки «Принять», «Отложить», «Отменить». Отметка меняется только нажатием другой кнопки;
@@ -94,8 +97,9 @@ Versafy — шаблон карточки изменений. Эталон к «
    «Сохранить» (галочка). Пока поле открыто, кнопки решений этого блока неактивны (атрибут disabled).
    В поле Enter равносилен «Сохранить», Escape — «Отменить ввод»; перенос строки — Shift+Enter.
    Если блок перестаёт быть активным при открытом поле ввода, сначала происходит то же, что по «Отменить ввод».
-12. У активного блока стрелки вверх и вниз переводят к предыдущему или следующему блоку без решения и делают его
-   активным; подсказка выводится над стрелкой. Если решения приняты по всем блокам, стрелки прокручивают
+12. У активного блока справа вверху три компактные кнопки-значка без рамок с подсказками: стрелки вверх и вниз
+   переводят к предыдущему или следующему блоку без решения и делают его активным; «Минимизировать» делает
+   блок неактивным. Если решения приняты по всем блокам, стрелки прокручивают
    к кнопкам «Скопировать» и «Отправить», под которыми выводится «Решения по всем блокам приняты».
 -->
 <h2 class="sr-only">Карточка предлагаемых изменений</h2>
@@ -111,12 +115,12 @@ Versafy — шаблон карточки изменений. Эталон к «
 .cc-l{font-size:14px;line-height:1.5;word-break:break-word}.cc-fn{font-size:15px;font-weight:500}.cc-f+.cc-l,.cc-f+.cc-vs2{margin-top:4px}
 .cc-vs2{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;align-items:start}.cc-vs2.cc-vs1{grid-template-columns:auto minmax(0,1fr);gap:8px}.cc-vs2:not(.cc-vs1) .cc-arw{justify-self:start;transform:rotate(90deg)}
 .cc-dv{border-radius:4px;padding:1px 4px}.cc-d-acc{background:var(--bg-success);color:var(--text-success)}.cc-d-edit{background:var(--bg-accent);color:var(--text-accent)}.cc-d-canc{background:var(--bg-danger);color:var(--text-danger);text-decoration:line-through}
-.cc-tb{position:absolute;top:-15px;right:10px;display:none;align-items:center;gap:2px;padding:2px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-popover,var(--surface-2));z-index:3;cursor:default}.cc-row:not(.cc-on):hover .cc-tb{display:flex}
-.cc-tb button{position:relative;min-height:26px;min-width:26px;padding:0 5px;font-size:15px;border:0;background:transparent;flex:0 0 auto}.cc-tb button:disabled{opacity:.4;pointer-events:none}.cc-tb .cc-dim{color:var(--text-muted)}.cc-tb .cc-arw{font-size:12px;color:var(--text-muted)}.cc-sep{width:1px;align-self:stretch;background:var(--border-strong);margin:3px}
+.cc-tb{position:absolute;top:-12px;right:10px;display:none;align-items:center;border-radius:var(--radius);background:var(--surface-popover,var(--surface-2));z-index:3;cursor:default}.cc-row:not(.cc-on):hover .cc-tb{display:flex}
+.cc-tb button,.cc-nav button,.cc-all{position:relative;min-height:22px;min-width:22px;padding:0 3px;font-size:14px;border:0;background:transparent;flex:0 0 auto}.cc-tb button:disabled{opacity:.4;pointer-events:none}.cc-tb .cc-dim{color:var(--text-muted)}.cc-tb .cc-arw{font-size:12px;color:var(--text-muted)}.cc-sep{width:1px;align-self:stretch;background:var(--border-strong);margin:3px 2px}
 .cc-grp{border:0.5px solid var(--border);border-radius:12px;background:var(--surface-2);margin:0 0 12px;padding:2px 0 6px}.cc-gh{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:16px;font-weight:500;color:var(--text-accent);padding:6px 8px 2px 12px;min-height:28px}.cc-gh a{color:inherit}
-.cc-all{position:relative;min-height:26px;min-width:26px;padding:0 5px;font-size:15px;border:0;background:transparent;flex:0 0 auto;color:var(--text-success)}.cc-grp .cc-row:not(.cc-on) textarea[id^="m"]{margin-top:4px!important}
+.cc-all{color:var(--text-success)}.cc-grp .cc-row:not(.cc-on) textarea[id^="m"]{margin-top:4px!important}
 .cc-grp .cc-row:not(.cc-on){border:0;border-radius:0;margin:0;padding:3px 12px;background:transparent}.cc-grp .cc-row:not(.cc-on):hover{outline:0;background:var(--fill-ghost-hover,var(--bg-neutral))}.cc-grp .cc-row.cc-on{margin:6px 8px}
-.cc-grp .cc-row:not(.cc-on) .cc-tb{top:-27px}.cc-grp .cc-row:not(.cc-on) .cc-usr{border-top:0;margin-top:0;padding-top:0}.cc-grp .cc-row:not(.cc-on) .cc-usr .cc-val{color:var(--text-secondary)}
+.cc-grp .cc-row:not(.cc-on) .cc-tb{top:-20px}.cc-grp .cc-row:not(.cc-on) .cc-usr{border-top:0;margin-top:0;padding-top:0}.cc-grp .cc-row:not(.cc-on) .cc-usr .cc-val{color:var(--text-secondary)}
 .cc-f{font-size:15px;font-weight:500;margin-top:4px}.cc-row:not(.cc-on) .cc-f{margin-top:0}
 .cc-hd{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .cc-vc{position:relative}.cc-cp{position:absolute;top:2px;right:0;min-height:24px;min-width:24px;padding:0 4px;font-size:14px;opacity:0;background:var(--surface-2)}.cc-usr>.cc-cp{top:6px}.cc-vc:hover>.cc-cp,.cc-cp:focus-visible{opacity:1}
@@ -128,7 +132,7 @@ Versafy — шаблон карточки изменений. Эталон к «
 .cc-ddl{max-height:220px;overflow-y:auto;border:0.5px solid var(--border);border-radius:var(--radius);margin-top:4px;background:var(--surface-1)}
 .cc-ddl button{display:block;width:100%;text-align:left;min-height:40px;font-size:13px;border:0;border-bottom:0.5px solid var(--border);border-radius:0;background:transparent}
 .cc-ddl .cc-none{padding:10px 12px;font-size:13px;color:var(--text-secondary)}
-.cc-nav{display:flex;gap:4px;flex:0 0 auto}.cc-nav button{position:relative;min-height:28px;min-width:28px;padding:0 6px;font-size:14px}
+.cc-nav{display:flex;flex:0 0 auto}
 .cc-nav button::after,.cc-ib::after,.cc-tb button::after,.cc-cp::after,.cc-all::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);right:0;white-space:nowrap;font-size:12px;padding:4px 8px;border-radius:var(--radius);background:var(--surface-popover,var(--surface-2));color:var(--text-primary);border:0.5px solid var(--border-strong);opacity:0;pointer-events:none;transition:opacity .15s;z-index:2}
 .cc-nav button:hover::after,.cc-nav button:focus-visible::after,.cc-nav button.tip-on::after,.cc-ib:hover::after,.cc-ib:focus-visible::after,.cc-tb button:hover::after,.cc-tb button:focus-visible::after,.cc-cp:hover::after,.cc-cp:focus-visible::after,.cc-all:hover::after,.cc-all:focus-visible::after{opacity:1}
 .cc-eb{display:flex;justify-content:flex-end;gap:6px;margin-top:8px}.cc-ib{position:relative;min-height:36px;min-width:36px;padding:0 8px;font-size:18px}
@@ -161,10 +165,10 @@ const MT={acc:['принято','color-mix(in srgb,var(--bg-accent),var(--bg-suc
 let act=null,down=false;
 function setAct(k){if(k===act)return;const o=act,p=o&&document.querySelector(`[data-blk="${o}"]`);act=k;
 if(p){const j=+o.slice(1);if(o[0]==='r'&&state[j].o){state[j].o=null;p.outerHTML=rowHTML(R[j],j)}else p.classList.remove('cc-on')}
-const n=document.querySelector(`[data-blk="${k}"]`);if(n)n.classList.add('cc-on');tune(o);tune(k)}
+const n=k&&document.querySelector(`[data-blk="${k}"]`);if(n)n.classList.add('cc-on');tune(o);tune(k)}
 const blkOf=t=>{const r=t&&t.closest&&t.closest('[data-blk]');return r?r.dataset.blk:null};
 const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-const navHTML=k=>`<div class="cc-nav">${[[-1,'up','предыдущему'],[1,'down','следующему']].map(([d,ic,w])=>`<button data-nav="${d}" data-from="${k}" data-tip="К ${w} блоку без решения" aria-label="К ${w} блоку без решения"><i class="ti ti-chevron-${ic}" aria-hidden="true"></i></button>`).join('')}</div>`;
+const navHTML=k=>`<div class="cc-nav">${[[-1,'up','предыдущему'],[1,'down','следующему']].map(([d,ic,w])=>`<button data-nav="${d}" data-from="${k}" data-tip="К ${w} блоку без решения" aria-label="К ${w} блоку без решения"><i class="ti ti-chevron-${ic}" aria-hidden="true"></i></button>`).join('')}<button data-min data-tip="Минимизировать" aria-label="Минимизировать"><i class="ti ti-arrows-diagonal-minimize-2" aria-hidden="true"></i></button></div>`;
 const cpBtn=(k,l)=>`<button class="cc-cp" data-cp="${k}" data-tip="${l}" aria-label="${l}"><i class="ti ti-copy" aria-hidden="true"></i></button>`;
 const oHTML=r=>r.u?`<a href="${r.u}">${esc(r.o)}</a>`:esc(r.o);
 const hasW=r=>!!r.w&&!/^[\s—–-]*$/.test(r.w);
@@ -189,11 +193,11 @@ return `<div class="cc-row ${s.a?'s-'+s.a:''}${act==='r'+i?' cc-on':''}" data-bl
 ${ex?`<div class="cc-usr${ed?' cc-ao cc-vc':''}"><div class="cc-lbl cc-wn">${ex[0]}</div>${ed?cpBtn('e'+i,'Скопировать изменённое значение'):''}<div class="cc-val">${esc(ex[1])}</div></div>`:''}
 <div class="cc-lbl cc-src">Источник: ${esc(r.s)}</div><div id="ed${i}">${s.o?edHTML(i):''}</div>
 <div class="cc-btns">${[['acc','Принять'],['edit','Изменить'],['disc','Обсудить'],['post','Отложить'],['canc','Отменить']].map(([k,l])=>`<button data-a="${k}" data-i="${i}"${s.o?' disabled':''}>${l}</button>`).join('')}</div></div>`}
-function valHTML(id,t,c){return `<div class="cc-val" id="${id}" data-fit><span class="${c}">${esc(t)}</span><span class="cc-more" role="button" tabindex="0" data-more="${id}" hidden>Показать полностью</span></div>`}
+function valHTML(id,t,c){return `<div class="cc-val" id="${id}" data-fit><span class="${c}">${esc(t)}</span><span class="cc-more" role="button" tabindex="0" data-na data-more="${id}" hidden>Показать полностью</span></div>`}
 const xp={};
 function fit(el){if(el.offsetParent===null)return;const id=el.id,j=+id.slice(1),full=id[0]==='v'?R[j].n:id[0]==='z'?R[j].w:shown(j),tx=el.firstElementChild,mo=el.lastElementChild,fc=document.activeElement===mo;
 tx.textContent=full;mo.hidden=true;const max=(parseFloat(getComputedStyle(el).lineHeight)||21)*3+2;if(el.offsetHeight<=max)return;
-mo.hidden=false;if(fc)mo.focus({preventScroll:true});if(xp[id]){mo.textContent='Свернуть';tx.textContent=full+' ';return}
+mo.hidden=false;if(fc)mo.focus({preventScroll:true});if(xp[(id[0]==='z'?'w':'n')+j]){mo.textContent='Свернуть';tx.textContent=full+' ';return}
 mo.textContent='Показать полностью';let lo=0,hi=full.length;
 while(lo<hi){const m=(lo+hi+1)>>1;tx.textContent=full.slice(0,m).trimEnd()+'… ';if(el.offsetHeight<=max)lo=m;else hi=m-1}
 const w=full.slice(0,lo).search(/\s\S*$/);tx.textContent=full.slice(0,w>lo-25&&w>0?w:lo).trimEnd()+'… '}
@@ -235,8 +239,8 @@ return r||m?`Пока не по всем значениям и вопросам 
 render();renderMiss();tuneAll();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(tuneAll);
 if(window.ResizeObserver){let rw=0;new ResizeObserver(x=>{const w=Math.round(x[0].contentRect.width);if(w!==rw){rw=w;tuneAll()}}).observe(document.getElementById('rows'))}
-document.getElementById('rows').addEventListener('click',e=>{const mo=e.target.closest('[data-more]');if(mo){const id=mo.dataset.more,j=id.slice(1);if(id[0]!=='v'){xp['v'+j]=true;fitIn('r'+j)}else{xp[id]=!xp[id];fit(document.getElementById(id))}return}
-const b=e.target.closest('button');if(!b||b.dataset.k||b.dataset.nav||b.dataset.all!==undefined)return;
+document.getElementById('rows').addEventListener('click',e=>{const mo=e.target.closest('[data-more]');if(mo){const id=mo.dataset.more,j=id.slice(1),x=(id[0]==='z'?'w':'n')+j;xp[x]=!xp[x];fitIn('r'+j);return}
+const b=e.target.closest('button');if(!b||b.dataset.k||b.dataset.nav||b.dataset.all!==undefined||b.dataset.min!==undefined)return;
 const cpk=b.dataset.cp||b.dataset.tcp;if(cpk){const j=+cpk.slice(1),ic=b.firstElementChild;copyText(cpk[0]==='w'?R[j].w:b.dataset.tcp?shown(j):cpk[0]==='n'?R[j].n:state[j].e,ok=>{ic.className=ok?'ti ti-check':'ti ti-x';setTimeout(()=>{ic.className='ti ti-copy'},1500)});return}
 const i=+b.dataset.i,a=b.dataset.a,tb=b.dataset.tb!==undefined;
 if(b.dataset.cancel){const j=+b.dataset.cancel,o=state[j].o;state[j].o=null;renderRow(j,o);return}
@@ -249,10 +253,11 @@ document.addEventListener('keydown',e=>{const t=e.target;if(!t.dataset||!t.datas
 if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.querySelector(`[data-save][data-i="${i}"]`).click()}else if(e.key==='Escape'){e.preventDefault();document.querySelector(`[data-cancel="${i}"]`).click()}});
 document.addEventListener('focusin',e=>{const t=e.target;if(t.dataset.ks)fillList(t.dataset.ks)});
 document.addEventListener('pointerdown',()=>{down=true},true);
-['pointerup','pointercancel'].forEach(n=>document.addEventListener(n,()=>{down=false},true));
+document.addEventListener('pointercancel',()=>{down=false},true);
+document.addEventListener('pointerup',e=>{down=false;const t=e.target;if(e.pointerType==='touch'&&act&&!blkOf(t)&&!(t&&t.closest&&t.closest('button,a,input,textarea,[role="button"]')))setAct(null)},true);
 window.addEventListener('blur',()=>{down=false});
 const noAct=t=>!!(t&&t.closest&&t.closest('[data-na]'));
-document.addEventListener('click',e=>{if(noAct(e.target))return;const k=blkOf(e.target);if(k)setAct(k)},true);
+document.addEventListener('click',e=>{if(noAct(e.target))return;setAct(blkOf(e.target))},true);
 document.addEventListener('keydown',e=>{down=false;const t=e.target,k=blkOf(t);if(k&&!noAct(t))setAct(k);if(t.dataset&&t.dataset.more&&(e.key==='Enter'||e.key===' ')){e.preventDefault();t.click()}},true);
 document.addEventListener('focusin',e=>{const k=blkOf(e.target);if(k&&!down&&!noAct(e.target))setAct(k)});
 function enter(el){if(el.dataset.blk){setAct(el.dataset.blk);el.focus({preventScroll:true})}jump(el)}
@@ -264,6 +269,7 @@ function go(b){const L=blocks(),d=+b.dataset.nav;if(!L.some(undec)){jump(documen
 for(;x>=0&&x<L.length;x+=d)if(undec(L[x])){enter(L[x]);return}
 const tip=b.dataset.tip;b.dataset.tip=d<0?'Выше блоков без решения нет':'Ниже блоков без решения нет';b.classList.add('tip-on');setTimeout(()=>{b.dataset.tip=tip;b.classList.remove('tip-on')},1500)}
 document.addEventListener('click',e=>{const nv=e.target.closest('[data-nav]');if(nv){go(nv);return}
+if(e.target.closest('[data-min]')){setAct(null);if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();return}
 const al=e.target.closest('[data-all]');if(al){al.closest('.cc-grp').querySelectorAll('[data-blk]').forEach(x=>{const j=+x.dataset.blk.slice(1),s=state[j];if(!s.a&&!s.o){s.a='acc';renderRow(j)}});say('');return}
 if(e.target.closest('#showBtn')){const t=blocks().find(undec);if(t)enter(t);return}
 const b=e.target.closest('[data-k]');if(b){pick(b.dataset.k,+b.dataset.ok);return}
