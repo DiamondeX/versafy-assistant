@@ -1,5 +1,5 @@
 <!--
-Versafy — шаблон карточки изменений. Эталон к «Versafy — регламент ИИ-ассистента», раздел 3 (версия 2.11).
+Versafy — шаблон карточки изменений. Эталон к «Versafy — регламент ИИ-ассистента», раздел 3 (версия 2.13).
 Хранится в репозитории DiamondeX/versafy-assistant; изменения вносятся только через pull request (см. README).
 Словесное описание карточки — Google Doc «Описание карточки изменений для использования ИИ-ассистентом в чатах»
 (https://docs.google.com/document/d/1zNn8f3B0WeJ4fmjxR5ZI1pMviZTWF2PfKbyk50bEJGs/edit). Его читают, только если
@@ -40,6 +40,9 @@ Versafy — шаблон карточки изменений. Эталон к «
            До 6 вариантов выводятся кнопками, больше 6 — выпадающим списком с поиском по фрагменту.
            Нажатие варианта дописывает его в поле ответа через «; », повторное нажатие убирает его;
        one — true, если ответ может быть только один (статус, причина закрытия): нажатие заменяет ответ.
+       s — источник вопроса, как у блоков значений: откуда ассистент взял то, о чём спрашивает (встреча, переписка,
+           поле карточки, правило регламента). Выводится только у активного блока, над кнопками решений.
+           Не указывается, только если у вопроса нет источника;
        Варианты для полей со списком значений в Planfix берутся из актуального списка Planfix.
        Ответ в поле можно дописать или изменить вручную.
        Пустой массив M — блоков вопросов в карточке нет.
@@ -176,7 +179,7 @@ const R=[
 {o:'Название сделки #000',u:'https://versafy.planfix.ua/task/000',f:'Поле',w:'—',n:'Новое значение',s:'Источник'}
 ];
 const M=[
-{o:'Название сделки #000',u:'https://versafy.planfix.ua/task/000',q:'Вопрос о Контакт #000?',l:[{t:'Контакт #000',u:'https://versafy.planfix.ua/contact/000'}],opts:['Вариант 1','Вариант 2'],one:true}
+{o:'Название сделки #000',u:'https://versafy.planfix.ua/task/000',q:'Вопрос о Контакт #000?',l:[{t:'Контакт #000',u:'https://versafy.planfix.ua/contact/000'}],opts:['Вариант 1','Вариант 2'],one:true,s:'Источник'}
 ];
 const ST={acc:['принято','var(--bg-success)','var(--text-success)'],edit:['изменено','var(--bg-accent)','var(--text-accent)'],disc:['обсудить','var(--bg-warning)','var(--text-warning)'],post:['отложено','var(--surface-1)','var(--text-secondary)'],canc:['отменено','var(--bg-danger)','var(--text-danger)']};
 const state=R.map(r=>({a:r.ok?'acc':null,e:'',c:'',dr:{},o:null}));
@@ -238,7 +241,7 @@ function mtbHTML(i){const st=ms[i].st;return `<div class="cc-tb">${[['acc','Пр
 function mrowHTML(m,i){const st=ms[i].st;return `<div class="cc-row ${st==='acc'?'s-macc':st?'s-'+st:''}${act==='m'+i?' cc-on':''}" data-blk="m${i}" tabindex="0">${mtbHTML(i)}<div class="cc-hd" style="align-items:flex-start"><div style="font-size:14px;line-height:1.5">${qHTML(m)}${st?`<span class="cc-tag" style="background:${MT[st][1]};color:${MT[st][2]}">${MT[st][0]}</span>`:''}</div>${navHTML('m'+i)}</div>
 ${optsHTML('m'+i)}
 <textarea id="m${i}" data-kq="m${i}" rows="2" style="width:100%;margin-top:8px;box-sizing:border-box" placeholder="Ваш ответ"></textarea>
-<div id="me${i}" style="font-size:13px;color:var(--text-danger)"></div>
+<div id="me${i}" style="font-size:13px;color:var(--text-danger)"></div>${m.s?`<div class="cc-lbl cc-src">Источник: ${esc(m.s)}</div>`:''}
 <div class="cc-btns"><button data-mb="acc" data-mi="${i}" aria-pressed="${st==='acc'}">Принять</button><button data-mb="post" data-mi="${i}" aria-pressed="${st==='post'}">Отложить</button><button data-mb="canc" data-mi="${i}" aria-pressed="${st==='canc'}">Отменить</button></div></div>`}
 function renderMiss(){document.querySelectorAll('.cc-qs').forEach(el=>{el.innerHTML='<div class="cc-ql">Не хватает</div>'+G[+el.dataset.g].m.map(i=>mrowHTML(M[i],i)).join('')});M.forEach((_,j)=>{document.getElementById('m'+j).value=keep[j];syncOpts('m'+j);sizeM(j)})}
 function qHTML(m){const q=m.q,L=(m.l||[]).filter(x=>x.t&&q.includes(x.t));let o='',i=0;
