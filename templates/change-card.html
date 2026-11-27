@@ -1,5 +1,5 @@
 <!--
-Versafy — шаблон карточки изменений. Эталон к «Versafy — регламент ИИ-ассистента», раздел 3 (версия 2.10).
+Versafy — шаблон карточки изменений. Эталон к «Versafy — регламент ИИ-ассистента», раздел 3 (версия 2.11).
 Хранится в репозитории DiamondeX/versafy-assistant; изменения вносятся только через pull request (см. README).
 Словесное описание карточки — Google Doc «Описание карточки изменений для использования ИИ-ассистентом в чатах»
 (https://docs.google.com/document/d/1zNn8f3B0WeJ4fmjxR5ZI1pMviZTWF2PfKbyk50bEJGs/edit). Его читают, только если
@@ -22,12 +22,14 @@ Versafy — шаблон карточки изменений. Эталон к «
            решение «принято»; пользователь может выбрать другое решение;
        opts, one — необязательно, как у блоков вопросов M: для полей со списком значений (статус, причина закрытия,
            статус тенанта, исполнители) варианты показываются над полем редактирования при нажатии «Изменить».
-       Блоки одного объекта (одинаковые o и u) идут подряд и образуют группу. Порядок групп и порядок блоков
+       Блоки одного объекта (одинаковые o и u) образуют группу. Порядок групп и порядок блоков
        внутри группы задают регламент (раздел 3) и документ «Versafy — поля объектов».
-   M — блоки вопросов раздела «Не хватает»:
-       o, u — необязательно: объект, к которому относится вопрос, и ссылка на него, как у блоков значений.
-           Вопросы одного объекта идут подряд и образуют группу с его названием в заголовке; в тексте вопроса
-           название этого объекта не повторяется. Вопросы без o идут подряд и образуют группу без названия;
+   M — блоки вопросов «Не хватает»:
+       o, u — необязательно: объект, к которому относится вопрос, и ссылка на него, как у блоков значений
+           (o и u совпадают с ними буква в букву). Вопросы объекта выводятся в его группе после блоков значений,
+           под подписью «Не хватает»; в тексте вопроса название этого объекта не повторяется. Объект, по которому
+           есть только вопросы, образует свою группу: она встаёт перед группой объекта, который идёт следом
+           за ним в M. Вопросы без o образуют последнюю группу без названия;
        q — текст вопроса обычным текстом (весь вопрос ссылкой не делается);
        l — массив ссылок [{t,u}]: t — точный фрагмент текста q (например «Kamlesh Khatiwala #92»),
            u — ссылка на этот объект. Каждый упомянутый в тексте объект — отдельная ссылка; каждое вхождение t в q
@@ -40,7 +42,7 @@ Versafy — шаблон карточки изменений. Эталон к «
        one — true, если ответ может быть только один (статус, причина закрытия): нажатие заменяет ответ.
        Варианты для полей со списком значений в Planfix берутся из актуального списка Planfix.
        Ответ в поле можно дописать или изменить вручную.
-       Пустой массив M — раздел покажет «Вопросов нет».
+       Пустой массив M — блоков вопросов в карточке нет.
 4. Стили, разметку, кнопки, цвета и функцию collect() не менять.
 5. Формат собранного текста (кнопки «Скопировать» и «Отправить»):
    TITLE
@@ -82,14 +84,15 @@ Versafy — шаблон карточки изменений. Эталон к «
    при решении «изменено» — изменённое значение.
    На широком экране тулбар блока значения стоит левее тулбара группы и не закрывает его; на узком экране
    (мобильная вёрстка) он выровнен по правому краю без смещения и может перекрывать тулбар группы.
-9. Группы. У группы блоков значений в заголовке справа тулбар из четырёх кнопок-значков с подсказками.
+9. Группы. У одного объекта одна группа в общей рамке: заголовок с названием объекта, блоки значений,
+   затем под подписью «Не хватает» блоки вопросов этого объекта. В заголовке справа тулбар из четырёх
+   кнопок-значков с подсказками; кнопки действуют и на блоки значений, и на блоки вопросов группы.
    «Принять все нерешённые» (зелёная галочка) ставит «принято» блокам группы, у которых ещё нет решения;
    уже принятые решения не меняются. «Принять все» (зелёная галочка), «Отложить все» (серые часы) и «Отменить
    все» (красный крестик) ставят своё решение всем блокам группы, в том числе тем, по которым решение уже
    принято; на значке каждой из этих трёх кнопок в углу стоит небольшой плюс. «Принять все» у блока с решением
-   «изменено» принимает исходное «Станет». У группы блоков вопросов в заголовке тулбар из двух таких же кнопок
-   с плюсом: «Отложить все» и «Отменить все»; они действуют на все вопросы группы независимо от решения.
-   У группы вопросов без объекта заголовок состоит только из тулбара.
+   «изменено» принимает исходное «Станет». «Принять все нерешённые» и «Принять все» не действуют на блоки
+   вопросов, в которых ещё нет ответа. У группы вопросов без объекта заголовок состоит только из тулбара.
    Название объекта в заголовке без ссылки выводится цветом ссылки без подчёркивания.
 10. У блоков вопросов кнопки «Принять», «Отложить», «Отменить». Отметка меняется только нажатием другой кнопки;
    «Принять» без ответа не срабатывает. У неактивного вопроса поле ответа занимает одну строку; если ответ
@@ -139,6 +142,7 @@ Versafy — шаблон карточки изменений. Эталон к «
 .cc-grp .cc-row:not(.cc-on) textarea[id^="m"]{margin-top:4px!important}
 .cc-grp .cc-row:not(.cc-on){border:0;border-radius:0;margin:0;padding:3px 12px;background:transparent}.cc-grp .cc-row:not(.cc-on):hover{outline:0;background:var(--fill-ghost-hover,var(--bg-neutral))}.cc-grp .cc-row.cc-on{margin:6px 8px}
 .cc-grp .cc-row:not(.cc-on) .cc-tb{top:-37px}.cc-grp .cc-row:not(.cc-on) .cc-usr{border-top:0;margin-top:0;padding-top:0}.cc-grp .cc-row:not(.cc-on) .cc-usr .cc-val{color:var(--text-secondary)}
+.cc-ql{font-size:12px;color:var(--text-secondary);padding:6px 12px 0}.cc-row+.cc-qs{border-top:0.5px solid var(--border);margin-top:6px}
 .cc-f{font-size:15px;font-weight:500;margin-top:4px}.cc-row:not(.cc-on) .cc-f{margin-top:0}
 .cc-hd{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .cc-vc{position:relative}.cc-cp{position:absolute;top:-4px;right:0;opacity:0;background:linear-gradient(var(--fill-ghost-hover,rgba(0,0,0,.05)),var(--fill-ghost-hover,rgba(0,0,0,.05))),var(--surface-2)}.cc-cp:hover{background:linear-gradient(var(--fill-ghost-selected,rgba(0,0,0,.1)),var(--fill-ghost-selected,rgba(0,0,0,.1))),var(--surface-2)}.cc-usr>.cc-cp{top:1px}.cc-vc:hover>.cc-cp,.cc-cp:focus-visible{opacity:1}
@@ -161,11 +165,9 @@ Versafy — шаблон карточки изменений. Эталон к «
 .cc-row:not(.cc-on) :is(.cc-btns,.cc-src,.cc-opts,.cc-dd,.cc-nav,.cc-wn,.cc-ao){display:none}
 .cc-flash,.cc-row.cc-flash{outline:2px solid var(--text-accent);outline-offset:2px}
 .cc-cpw{display:flex;flex-direction:column;flex:1 1 30%}.cc-cpw button{flex:0 0 auto;width:100%}#cpMsg{font-size:12px;margin-top:4px}
-@media (min-width:560px){.cc-vs{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.cc-vs.cc-vs1{grid-template-columns:minmax(0,1fr)}.cc-vs2{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px}.cc-vs2:not(.cc-vs1) .cc-arw{transform:none}.cc-btns button,.cc-cpw{flex:0 0 auto}#rows .cc-grp .cc-tb{right:158px}#miss .cc-grp .cc-tb{right:90px}}
+@media (min-width:560px){.cc-vs{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.cc-vs.cc-vs1{grid-template-columns:minmax(0,1fr)}.cc-vs2{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px}.cc-vs2:not(.cc-vs1) .cc-arw{transform:none}.cc-btns button,.cc-cpw{flex:0 0 auto}#rows .cc-grp .cc-tb{right:158px}}
 </style>
 <div id="rows" style="padding:2rem 0 0.5rem"></div>
-<div style="font-size:16px;font-weight:500;margin:1rem 0 8px">Не хватает</div>
-<div id="miss"></div>
 <div class="cc-btns" id="fin" style="margin-top:14px"><div class="cc-cpw"><button id="copyBtn"><i class="ti ti-copy" aria-hidden="true"></i> Скопировать</button><div id="cpMsg" role="status"></div></div><button id="sendBtn">Отправить ↗</button></div>
 <div id="note" style="font-size:13px;color:var(--text-secondary);margin-top:6px"></div>
 <script>
@@ -195,7 +197,10 @@ const ARW='<span class="cc-arw" role="img" aria-label="станет">➜</span>'
 const shown=i=>state[i].a==='edit'?state[i].e:R[i].n;
 const TB=[['acc','Принять','check','var(--text-success)','var(--bg-success)',1],['edit','Изменить','pencil','var(--text-accent)','var(--bg-accent)',0],['disc','Обсудить','message-circle','var(--text-warning)','var(--bg-warning)',0],['post','Отложить','clock','var(--text-secondary)','var(--bg-neutral,var(--surface-1))',1],['canc','Отменить','x','var(--text-danger)','var(--bg-danger)',1]];
 const GA=[['acc','Принять все нерешённые','check','var(--text-success)',0],['acc','Принять все','check','var(--text-success)',1],['post','Отложить все','clock','var(--text-secondary)',1],['canc','Отменить все','x','var(--text-danger)',1]];
-const gaHTML=q=>`<div class="cc-ga">${GA.filter(g=>!q||(g[4]&&g[0]!=='acc')).map(([a,l,ic,c,f])=>`<button data-${q?'mall':'all'}="${a}"${f?' data-force class="cc-pl"':''} data-tip="${l}" aria-label="${l}" style="color:${c}"><i class="ti ti-${ic}" aria-hidden="true"></i></button>`).join('')}</div>`;
+const gaHTML=()=>`<div class="cc-ga">${GA.map(([a,l,ic,c,f])=>`<button data-all="${a}"${f?' data-force class="cc-pl"':''} data-tip="${l}" aria-label="${l}" style="color:${c}"><i class="ti ti-${ic}" aria-hidden="true"></i></button>`).join('')}</div>`;
+const gk=x=>(x.o||'')+'|'+(x.u||''),G=(()=>{const K=[],mk=[];R.forEach(r=>{if(!K.includes(gk(r)))K.push(gk(r))});M.forEach(m=>{if(!mk.includes(gk(m)))mk.push(gk(m))});
+mk.forEach((k,p)=>{if(k==='|'||K.includes(k))return;const nx=mk.slice(p+1).map(x=>K.indexOf(x)).filter(x=>x>=0);K.splice(nx.length?Math.min(...nx):K.length,0,k)});if(mk.includes('|')&&!K.includes('|'))K.push('|');
+return K.map(k=>{const r=R.map((x,i)=>gk(x)===k?i:-1).filter(i=>i>=0),m=M.map((x,i)=>gk(x)===k?i:-1).filter(i=>i>=0),s=r.length?R[r[0]]:M[m[0]];return{o:s.o,u:s.u,r,m}})})();
 function tbHTML(i){const s=state[i],cp=(k,l,c)=>`<button${c} data-na data-tcp="${k}${i}" data-tip="${l}" aria-label="${l}"><i class="ti ti-copy" aria-hidden="true"></i></button>`;
 return `<div class="cc-tb">${TB.map(([k,l,ic,c,bg,na])=>`<button data-tb${na?' data-na':''} data-a="${k}" data-i="${i}" data-tip="${l}" aria-label="${l}" style="color:${c}${s.a===k?';background:'+bg:''}"${s.o?' disabled':''}><i class="ti ti-${ic}" aria-hidden="true"></i></button>`).join('')}<span class="cc-sep"></span>${hasW(R[i])?cp('w','Скопировать старое значение',' class="cc-dim"')+'<span class="cc-arw" aria-hidden="true">➜</span>':''}${cp('n','Скопировать новое значение','')}</div>`}
 function offHTML(r,i){const s=state[i],hw=hasW(r),nv=shown(i),w=hw?r.w:'',lv=w.length+nv.length,ml=/\n/.test(w+nv),dc={acc:'cc-dv cc-d-acc',edit:'cc-dv cc-d-edit',canc:'cc-dv cc-d-canc'}[s.a]||'',tag=s.a==='disc'||s.a==='post'?tagHTML(s.a):'';
@@ -226,17 +231,16 @@ function sizeM(j){const ta=document.getElementById('m'+j);if(!ta)return;const on
 function tune(k){if(!k)return;if(k[0]==='m')sizeM(+k.slice(1));else fitIn(k)}
 function tuneAll(){document.querySelectorAll('[data-fit]').forEach(fit);M.forEach((_,j)=>sizeM(j))}
 function edHTML(i){const a=state[i].o;return `${a==='edit'?optsHTML('t'+i):''}<textarea id="t${i}" data-kq="t${i}" data-dr="${a}" class="cc-ta-${a}" rows="4" style="width:100%;margin-top:8px;box-sizing:border-box" placeholder="${a==='edit'?'Новое значение':'Контекст для переформулировки'}">${esc(state[i].dr[a]??(a==='edit'?(state[i].e||R[i].n):state[i].c))}</textarea><div class="cc-eb"><button class="cc-ib" data-cancel="${i}" data-tip="Отменить ввод" aria-label="Отменить ввод"><i class="ti ti-x" aria-hidden="true"></i></button><button class="cc-ib" data-save="${a}" data-i="${i}" data-tip="Сохранить" aria-label="Сохранить"><i class="ti ti-check" aria-hidden="true"></i></button></div><div id="err${i}" style="font-size:13px;color:var(--text-danger)"></div>`}
-function render(){let h='',p=null;R.forEach((r,i)=>{const k=r.o+'|'+r.u;if(k!==p){h+=(p===null?'':'</div>')+`<div class="cc-grp" role="group" aria-label="${esc(r.o)}"><div class="cc-gh"><span>${oHTML(r)}</span>${gaHTML(0)}</div>`;p=k}h+=rowHTML(r,i)});document.getElementById('rows').innerHTML=h+(R.length?'</div>':'')}
+function render(){document.getElementById('rows').innerHTML=G.map((g,x)=>`<div class="cc-grp"${g.o?` role="group" aria-label="${esc(g.o)}"`:''}><div class="cc-gh"><span>${g.o?oHTML(g):''}</span>${gaHTML()}</div>${g.r.map(i=>rowHTML(R[i],i)).join('')}${g.m.length?`<div class="cc-qs" data-g="${x}"></div>`:''}</div>`).join('')}
 function renderRow(i,f){document.querySelector(`[data-blk="r${i}"]`).outerHTML=rowHTML(R[i],i);fitIn('r'+i);if(state[i].o){syncOpts('t'+i);document.getElementById('t'+i).focus()}else if(f)refocus(`[data-blk="r${i}"] .cc-btns [data-a="${f}"]`)}
 function refocus(q){const b=document.querySelector(q);if(b)b.focus({preventScroll:true})}
 function mtbHTML(i){const st=ms[i].st;return `<div class="cc-tb">${[['acc','Принять','check',MT.acc[2],MT.acc[1]],['post','Отложить','clock','var(--text-secondary)','var(--bg-neutral,var(--surface-1))'],['canc','Отменить','x','var(--text-danger)','var(--bg-danger)']].map(([k,l,ic,c,bg])=>`<button data-tb data-na data-mb="${k}" data-mi="${i}" data-tip="${l}" aria-label="${l}" style="color:${c}${st===k?';background:'+bg:''}"><i class="ti ti-${ic}" aria-hidden="true"></i></button>`).join('')}</div>`}
-function renderMiss(){const el=document.getElementById('miss');if(!M.length){el.innerHTML='<div style="font-size:14px;color:var(--text-secondary)">Вопросов нет.</div>';return}
-let h='',p=null;M.forEach((m,i)=>{const k=(m.o||'')+'|'+(m.u||'');if(k!==p){h+=(p===null?'':'</div>')+`<div class="cc-grp"${m.o?` role="group" aria-label="${esc(m.o)}"`:''}><div class="cc-gh"><span>${m.o?oHTML(m):''}</span>${gaHTML(1)}</div>`;p=k}
-const st=ms[i].st;h+=`<div class="cc-row ${st==='acc'?'s-macc':st?'s-'+st:''}${act==='m'+i?' cc-on':''}" data-blk="m${i}" tabindex="0">${mtbHTML(i)}<div class="cc-hd" style="align-items:flex-start"><div style="font-size:14px;line-height:1.5">${qHTML(m)}${st?`<span class="cc-tag" style="background:${MT[st][1]};color:${MT[st][2]}">${MT[st][0]}</span>`:''}</div>${navHTML('m'+i)}</div>
+function mrowHTML(m,i){const st=ms[i].st;return `<div class="cc-row ${st==='acc'?'s-macc':st?'s-'+st:''}${act==='m'+i?' cc-on':''}" data-blk="m${i}" tabindex="0">${mtbHTML(i)}<div class="cc-hd" style="align-items:flex-start"><div style="font-size:14px;line-height:1.5">${qHTML(m)}${st?`<span class="cc-tag" style="background:${MT[st][1]};color:${MT[st][2]}">${MT[st][0]}</span>`:''}</div>${navHTML('m'+i)}</div>
 ${optsHTML('m'+i)}
 <textarea id="m${i}" data-kq="m${i}" rows="2" style="width:100%;margin-top:8px;box-sizing:border-box" placeholder="Ваш ответ"></textarea>
 <div id="me${i}" style="font-size:13px;color:var(--text-danger)"></div>
-<div class="cc-btns"><button data-mb="acc" data-mi="${i}" aria-pressed="${st==='acc'}">Принять</button><button data-mb="post" data-mi="${i}" aria-pressed="${st==='post'}">Отложить</button><button data-mb="canc" data-mi="${i}" aria-pressed="${st==='canc'}">Отменить</button></div></div>`});el.innerHTML=h+'</div>';M.forEach((_,j)=>{document.getElementById('m'+j).value=keep[j];syncOpts('m'+j);sizeM(j)})}
+<div class="cc-btns"><button data-mb="acc" data-mi="${i}" aria-pressed="${st==='acc'}">Принять</button><button data-mb="post" data-mi="${i}" aria-pressed="${st==='post'}">Отложить</button><button data-mb="canc" data-mi="${i}" aria-pressed="${st==='canc'}">Отменить</button></div></div>`}
+function renderMiss(){document.querySelectorAll('.cc-qs').forEach(el=>{el.innerHTML='<div class="cc-ql">Не хватает</div>'+G[+el.dataset.g].m.map(i=>mrowHTML(M[i],i)).join('')});M.forEach((_,j)=>{document.getElementById('m'+j).value=keep[j];syncOpts('m'+j);sizeM(j)})}
 function qHTML(m){const q=m.q,L=(m.l||[]).filter(x=>x.t&&q.includes(x.t));let o='',i=0;
 while(i<q.length){let b=null;L.forEach(x=>{const p=q.indexOf(x.t,i);if(p>=0&&(!b||p<b.p||(p===b.p&&x.t.length>b.x.t.length)))b={p,x}});
 if(!b){o+=esc(q.slice(i));break}o+=esc(q.slice(i,b.p))+`<a href="${b.x.u}">${esc(b.x.t)}</a>`;i=b.p+b.x.t.length}return o}
@@ -260,7 +264,7 @@ render();renderMiss();tuneAll();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(tuneAll);
 if(window.ResizeObserver){let rw=0;new ResizeObserver(x=>{const w=Math.round(x[0].contentRect.width);if(w!==rw){rw=w;tuneAll()}}).observe(document.getElementById('rows'))}
 document.getElementById('rows').addEventListener('click',e=>{const mo=e.target.closest('[data-more]');if(mo){const id=mo.dataset.more,j=id.slice(1),x=(id[0]==='z'?'w':'n')+j;xp[x]=!xp[x];fitIn('r'+j);return}
-const b=e.target.closest('button');if(!b||b.dataset.k||b.dataset.nav||b.dataset.all!==undefined||b.dataset.min!==undefined)return;
+const b=e.target.closest('button');if(!b||b.dataset.k||b.dataset.nav||b.dataset.mb||b.dataset.all!==undefined||b.dataset.min!==undefined)return;
 const cpk=b.dataset.cp||b.dataset.tcp;if(cpk){const j=+cpk.slice(1),ic=b.firstElementChild;copyText(cpk[0]==='w'?R[j].w:b.dataset.tcp?shown(j):cpk[0]==='n'?R[j].n:state[j].e,ok=>{ic.className=ok?'ti ti-check':'ti ti-x';setTimeout(()=>{ic.className='ti ti-copy'},1500)});return}
 const i=+b.dataset.i,a=b.dataset.a,tb=b.dataset.tb!==undefined;
 if(b.dataset.cancel){const j=+b.dataset.cancel,o=state[j].o;state[j].o=null;renderRow(j,o);return}
@@ -290,12 +294,12 @@ for(;x>=0&&x<L.length;x+=d)if(undec(L[x])){enter(L[x]);return}
 const tip=b.dataset.tip;b.dataset.tip=d<0?'Выше блоков без решения нет':'Ниже блоков без решения нет';b.classList.add('tip-on');setTimeout(()=>{b.dataset.tip=tip;b.classList.remove('tip-on')},1500)}
 document.addEventListener('click',e=>{const nv=e.target.closest('[data-nav]');if(nv){go(nv);return}
 if(e.target.closest('[data-min]')){setAct(null);if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();return}
-const al=e.target.closest('[data-all]');if(al){const a=al.dataset.all,f=al.dataset.force!==undefined;al.closest('.cc-grp').querySelectorAll('[data-blk]').forEach(x=>{const j=+x.dataset.blk.slice(1),s=state[j];if(f?(s.a!==a||s.o):(!s.a&&!s.o)){s.o=null;s.a=a;renderRow(j)}});say('');return}
-const ml=e.target.closest('[data-mall]');if(ml){const a=ml.dataset.mall,g=ml.closest('.cc-grp'),gi=[...g.parentNode.children].indexOf(g);M.forEach((_,j)=>keep[j]=document.getElementById('m'+j).value);g.querySelectorAll('[data-blk]').forEach(x=>{ms[+x.dataset.blk.slice(1)].st=a});say('');renderMiss();refocus(`#miss .cc-grp:nth-child(${gi+1}) [data-mall="${a}"]`);return}
+const al=e.target.closest('[data-all]');if(al){const a=al.dataset.all,f=al.dataset.force!==undefined,g=al.closest('.cc-grp');g.querySelectorAll('[data-blk^="r"]').forEach(x=>{const j=+x.dataset.blk.slice(1),s=state[j];if(f?(s.a!==a||s.o):(!s.a&&!s.o)){s.o=null;s.a=a;renderRow(j)}});
+const q=[...g.querySelectorAll('[data-blk^="m"]')].map(x=>+x.dataset.blk.slice(1));if(q.length){M.forEach((_,j)=>keep[j]=document.getElementById('m'+j).value);let ch=0;q.forEach(j=>{if((f||!ms[j].st)&&ms[j].st!==a&&(a!=='acc'||keep[j].trim())){ms[j].st=a;ch=1}});if(ch)renderMiss()}say('');return}
 if(e.target.closest('#showBtn')){const t=blocks().find(undec);if(t)enter(t);return}
 const b=e.target.closest('[data-k]');if(b){pick(b.dataset.k,+b.dataset.ok);return}
 if(!e.target.closest('.cc-dd'))document.querySelectorAll('.cc-ddl').forEach(l=>l.hidden=true)});
-document.getElementById('miss').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.k)return;
+document.getElementById('rows').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.k)return;
 const a=b.dataset.mb;if(!a)return;const i=+b.dataset.mi;
 if(a==='acc'&&!document.getElementById('m'+i).value.trim()){document.getElementById('me'+i).textContent='Введите или выберите ответ';return}
 M.forEach((_,j)=>keep[j]=document.getElementById('m'+j).value);ms[i].st=a;say('');renderMiss();if(b.dataset.tb===undefined)refocus(`.cc-btns [data-mb="${a}"][data-mi="${i}"]`)});
