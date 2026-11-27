@@ -73,8 +73,8 @@ Versafy — шаблон карточки изменений. Эталон к «
    Решения «принято», «изменено» и «отменено» показываются оформлением нового значения в цвете решения
    (отменённое зачёркнуто), при «изменено» на месте нового значения стоит изменённое. «Обсудить» и «отложено»
    показываются отметкой; у «обсудить» под строкой серым выводится контекст.
-8. Всплывающий ряд. При наведении на неактивный блок над ним справа появляются компактные кнопки-значки
-   без рамок, с подсказками:
+8. Всплывающий ряд. При наведении на неактивный блок над ним справа появляется набор кнопок-значков
+   в общей рамке, с подсказками:
    у блока значения — «Принять», «Изменить», «Обсудить», «Отложить», «Отменить», затем «Скопировать старое
    значение» (если оно есть) ➜ «Скопировать новое значение»; у блока вопроса — «Принять», «Отложить», «Отменить».
    «Принять», «Отложить», «Отменить» и копирование срабатывают без активации блока; «Изменить» и «Обсудить»
@@ -92,15 +92,19 @@ Versafy — шаблон карточки изменений. Эталон к «
    выборе другого действия и восстанавливается при повторном выборе того же действия. В собранный текст он
    попадает, только если сохранён кнопкой «Сохранить» и итоговое решение по блоку — то же действие. Нажатие
    «Изменить» или «Обсудить» сбрасывает решение по блоку; пока не нажата «Сохранить», поле ввода подсвечено
-   цветом режима (синим у «Изменить», жёлто-коричневым у «Обсудить»). Под полем справа кнопки-иконки
-   с подсказками: «Отменить ввод» (крестик) закрывает поле, блок остаётся без решения, черновик сохраняется;
+   цветом режима (синим у «Изменить», жёлто-коричневым у «Обсудить»). Под полем справа две кнопки-значка
+   в общей рамке, с подсказками: «Отменить ввод» (крестик) закрывает поле, блок остаётся без решения, черновик сохраняется;
    «Сохранить» (галочка). Пока поле открыто, кнопки решений этого блока неактивны (атрибут disabled).
    В поле Enter равносилен «Сохранить», Escape — «Отменить ввод»; перенос строки — Shift+Enter.
    Если блок перестаёт быть активным при открытом поле ввода, сначала происходит то же, что по «Отменить ввод».
-12. У активного блока справа вверху три компактные кнопки-значка без рамок с подсказками: стрелки вверх и вниз
+12. У активного блока справа вверху набор из трёх кнопок-значков в общей рамке, с подсказками: стрелки вверх и вниз
    переводят к предыдущему или следующему блоку без решения и делают его активным; «Минимизировать» делает
    блок неактивным. Если решения приняты по всем блокам, стрелки прокручивают
    к кнопкам «Скопировать» и «Отправить», под которыми выводится «Решения по всем блокам приняты».
+13. Кнопки-значки. Кнопка, на которой есть только значок (кнопки всплывающего ряда, стрелки перехода
+   и «Минимизировать», «Принять все», «Копировать» у значения, «Отменить ввод» и «Сохранить»), имеет размер
+   30×30 пикселей и не имеет собственной рамки; значок занимает на ней 26×26 пикселей. Набор из нескольких
+   таких кнопок обведён одной общей рамкой; одиночная кнопка-значок остаётся без рамки.
 -->
 <h2 class="sr-only">Карточка предлагаемых изменений</h2>
 <style>
@@ -115,15 +119,17 @@ Versafy — шаблон карточки изменений. Эталон к «
 .cc-l{font-size:14px;line-height:1.5;word-break:break-word}.cc-fn{font-size:15px;font-weight:500}.cc-f+.cc-l,.cc-f+.cc-vs2{margin-top:4px}
 .cc-vs2{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;align-items:start}.cc-vs2.cc-vs1{grid-template-columns:auto minmax(0,1fr);gap:8px}.cc-vs2:not(.cc-vs1) .cc-arw{justify-self:start;transform:rotate(90deg)}
 .cc-dv{border-radius:4px;padding:1px 4px}.cc-d-acc{background:var(--bg-success);color:var(--text-success)}.cc-d-edit{background:var(--bg-accent);color:var(--text-accent)}.cc-d-canc{background:var(--bg-danger);color:var(--text-danger);text-decoration:line-through}
-.cc-tb{position:absolute;top:-12px;right:10px;display:none;align-items:center;border-radius:var(--radius);background:var(--surface-popover,var(--surface-2));z-index:3;cursor:default}.cc-row:not(.cc-on):hover .cc-tb{display:flex}
-.cc-tb button,.cc-nav button,.cc-all{position:relative;min-height:22px;min-width:22px;padding:0 3px;font-size:14px;border:0;background:transparent;flex:0 0 auto}.cc-tb button:disabled{opacity:.4;pointer-events:none}.cc-tb .cc-dim{color:var(--text-muted)}.cc-tb .cc-arw{font-size:12px;color:var(--text-muted)}.cc-sep{width:1px;align-self:stretch;background:var(--border-strong);margin:3px 2px}
-.cc-grp{border:0.5px solid var(--border);border-radius:12px;background:var(--surface-2);margin:0 0 12px;padding:2px 0 6px}.cc-gh{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:16px;font-weight:500;color:var(--text-accent);padding:6px 8px 2px 12px;min-height:28px}.cc-gh a{color:inherit}
+.cc-tb{position:absolute;top:-21px;right:10px;display:none;align-items:center;background:var(--surface-popover,var(--surface-2));z-index:3;cursor:default}.cc-row:not(.cc-on):hover .cc-tb{display:flex}
+.cc-tb button,.cc-nav button,.cc-all,.cc-cp,.cc-ib{position:relative;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;min-width:0;min-height:0;padding:0;border:0;border-radius:0;background:transparent;flex:0 0 auto}
+:is(.cc-tb,.cc-nav) button>i,:is(.cc-all,.cc-cp,.cc-ib)>i{display:block;width:26px;height:26px;font-size:26px;line-height:26px}
+.cc-tb,.cc-nav,.cc-eb{border:0.5px solid var(--border-strong);border-radius:8px}:is(.cc-tb,.cc-nav,.cc-eb)>button:first-child{border-radius:7px 0 0 7px}:is(.cc-tb,.cc-nav,.cc-eb)>button:last-child{border-radius:0 7px 7px 0}.cc-all,.cc-cp{border-radius:8px}.cc-tb button:disabled{opacity:.4;pointer-events:none}.cc-tb .cc-dim{color:var(--text-muted)}.cc-tb .cc-arw{font-size:12px;color:var(--text-muted)}.cc-sep{width:1px;align-self:stretch;background:var(--border-strong);margin:5px 2px}
+.cc-grp{border:0.5px solid var(--border);border-radius:12px;background:var(--surface-2);margin:0 0 12px;padding:2px 0 6px}.cc-gh{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:16px;font-weight:500;color:var(--text-accent);padding:6px 8px 2px 12px;min-height:30px}.cc-gh a{color:inherit}
 .cc-all{color:var(--text-success)}.cc-grp .cc-row:not(.cc-on) textarea[id^="m"]{margin-top:4px!important}
 .cc-grp .cc-row:not(.cc-on){border:0;border-radius:0;margin:0;padding:3px 12px;background:transparent}.cc-grp .cc-row:not(.cc-on):hover{outline:0;background:var(--fill-ghost-hover,var(--bg-neutral))}.cc-grp .cc-row.cc-on{margin:6px 8px}
-.cc-grp .cc-row:not(.cc-on) .cc-tb{top:-20px}.cc-grp .cc-row:not(.cc-on) .cc-usr{border-top:0;margin-top:0;padding-top:0}.cc-grp .cc-row:not(.cc-on) .cc-usr .cc-val{color:var(--text-secondary)}
+.cc-grp .cc-row:not(.cc-on) .cc-tb{top:-29px}#rows .cc-grp .cc-tb{right:44px}.cc-grp .cc-row:not(.cc-on) .cc-usr{border-top:0;margin-top:0;padding-top:0}.cc-grp .cc-row:not(.cc-on) .cc-usr .cc-val{color:var(--text-secondary)}
 .cc-f{font-size:15px;font-weight:500;margin-top:4px}.cc-row:not(.cc-on) .cc-f{margin-top:0}
 .cc-hd{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.cc-vc{position:relative}.cc-cp{position:absolute;top:2px;right:0;min-height:24px;min-width:24px;padding:0 4px;font-size:14px;opacity:0;background:var(--surface-2)}.cc-usr>.cc-cp{top:6px}.cc-vc:hover>.cc-cp,.cc-cp:focus-visible{opacity:1}
+.cc-vc{position:relative}.cc-cp{position:absolute;top:-4px;right:0;opacity:0;background:var(--surface-2)}.cc-usr>.cc-cp{top:1px}.cc-vc:hover>.cc-cp,.cc-cp:focus-visible{opacity:1}
 .cc-usr{margin-top:8px;padding-top:4px;border-top:0.5px solid var(--border)}
 .cc-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.cc-btns button{min-height:40px;flex:1 1 30%;font-size:13px}
 .cc-tag{display:inline-block;font-size:12px;font-weight:400;padding:2px 8px;border-radius:var(--radius);margin-left:6px}
@@ -135,7 +141,7 @@ Versafy — шаблон карточки изменений. Эталон к «
 .cc-nav{display:flex;flex:0 0 auto}
 .cc-nav button::after,.cc-ib::after,.cc-tb button::after,.cc-cp::after,.cc-all::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);right:0;white-space:nowrap;font-size:12px;padding:4px 8px;border-radius:var(--radius);background:var(--surface-popover,var(--surface-2));color:var(--text-primary);border:0.5px solid var(--border-strong);opacity:0;pointer-events:none;transition:opacity .15s;z-index:2}
 .cc-nav button:hover::after,.cc-nav button:focus-visible::after,.cc-nav button.tip-on::after,.cc-ib:hover::after,.cc-ib:focus-visible::after,.cc-tb button:hover::after,.cc-tb button:focus-visible::after,.cc-cp:hover::after,.cc-cp:focus-visible::after,.cc-all:hover::after,.cc-all:focus-visible::after{opacity:1}
-.cc-eb{display:flex;justify-content:flex-end;gap:6px;margin-top:8px}.cc-ib{position:relative;min-height:36px;min-width:36px;padding:0 8px;font-size:18px}
+.cc-eb{display:flex;width:fit-content;margin:8px 0 0 auto}
 .cc-btns button:disabled{opacity:.4;pointer-events:none;transform:none}
 .cc-ta-edit{background:var(--bg-accent);border:1px solid var(--text-accent)!important}.cc-ta-disc{background:var(--bg-warning);border:1px solid var(--text-warning)!important}
 .cc-row:not(.cc-on){cursor:pointer}.cc-row:not(.cc-on):hover{outline:1px solid var(--border-strong)}
